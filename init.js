@@ -51,7 +51,8 @@ cb.rotateX( - Math.PI / 2);
 cb.position.y = 0;
 // FLOOR ///////////////////
 
-shape.position.y = 1;
+shape.position.y = shape.geometry.parameters.height / 2;
+
 scene.add( cb );
 scene.add( shape );
 
@@ -68,6 +69,9 @@ function onMouseMove( event ) {
 	// }
 }
 
+document.addEventListener('keydown', onKeyDownUp, false);
+document.addEventListener('keyup', onKeyDownUp, false);
+
 let animate = function () {
 	// window.addEventListener( 'mousemove', onMouseMove, false );
 	requestAnimationFrame( animate );
@@ -79,6 +83,8 @@ let animate = function () {
 
 	renderer.setViewport(WINDOW_WIDTH-200,50,150,150);
 	renderer.render(scene, camera2);
+    doMovementLoop();
+
 };
 
 animate();
