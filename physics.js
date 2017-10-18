@@ -1,10 +1,12 @@
 var arrowMoveControls = {
     up: 38,
+    down: 40,
     left: 37,
     right: 39
 };
 var wasdMoveControls = {
     up: 87,
+    down: 83,
     left: 65,
     right: 68
 };
@@ -30,6 +32,9 @@ function doMovementLoop() {
     }
     if (keyCodeMap[moveControls.right]) {
         shape.rotateY(-rotationSpeed);
+    }
+    if (keyCodeMap[moveControls.down]) {
+        shape.translateZ(speed);
     }
     if (keyCodeMap[resetControl]) {
         shape.rotation.y = 0;
