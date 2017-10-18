@@ -47,10 +47,11 @@
 			// floor.position.y = 0;
 			// floor.rotateX( - Math.PI / 2);
 
+			shape.add(camera); // Follow shape with camera.
 
 			// FLOOR ///////////////////
 			// Geometry
-			var cbgeometry = new THREE.PlaneGeometry( 100, 1000, WORLD_SIDE_SIZE, 10*WORLD_SIDE_SIZE )
+			var cbgeometry = new THREE.PlaneGeometry( 100, 1000, WORLD_SIDE_SIZE, 1 )
 			// Materials
 			var cbmaterials = []; 
 			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.DoubleSide }) );
@@ -133,6 +134,7 @@
                     shape.position.set(0, shape.position.y, 0);
                 }
             }
+
 
             // Animate loop.
 
