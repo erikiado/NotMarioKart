@@ -10,7 +10,8 @@
 		<script src="three.min.js"></script>
 		<script type="text/javascript" src="dat.gui.min.js"></script>
 		<script type="text/javascript">
-			var gui;
+
+            var gui;
 			var textGui;
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth/2)/window.innerHeight, 0.1, 1000 );
@@ -105,6 +106,47 @@
 			};
 
 
+			// Movement
+
+            var wasdMoveControls = {
+                up: 38,
+                down: 40,
+                left: 37,
+                right: 39
+            };
+            var arrowMoveControls = {
+                up: 87,
+                down: 83,
+                left: 65,
+                right: 68
+            };
+            var resetControl = 8;
+            var enabledControls = arrowMoveControls;
+
+            var speed = 0.01;
+
+            document.addEventListener("keydown", onDocumentKeyDown, false);
+            function onDocumentKeyDown(event) {
+                switch (event.which) {
+
+                }
+                if (event.which === 87) {
+                    shape.position.z += zSpeed;
+                    console.log('z up')
+                } else if (keyCode === 83) {
+                    shape.position.z -= zSpeed;
+                    console.log('z down')
+                } else if (keyCode === 65) {
+                    shape.position.x -= xSpeed;
+                    console.log('x up')
+                } else if (keyCode === 68) {
+                    shape.position.x += xSpeed;
+                    console.log('x down')
+                } else if (keyCode === 32) {
+                    shape.position.set(0, 0, 0);
+                    console.log('reset')
+                }
+            }
 
 			animate();
 		</script>
