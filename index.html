@@ -92,16 +92,6 @@
 				// }
 			}
 
-			var animate = function () {
-				// window.addEventListener( 'mousemove', onMouseMove, false );
-				requestAnimationFrame( animate );
-			
-				renderer.clear();
-				
-				renderer.setViewport(0,0,window.innerWidth,window.innerHeight);
-				renderer.render(scene, camera);
-            // Movement.
-
             var arrowMoveControls = {
                 up: 38,
                 down: 40,
@@ -155,12 +145,11 @@
 
                 renderer.clear();
 
-                renderer.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
+                renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
                 renderer.render(scene, camera);
 
 				renderer.setViewport(window.innerWidth-200,50,150,150);
 				renderer.render(scene, camera2);
-			};
 
                 doMovementLoop();
             };
