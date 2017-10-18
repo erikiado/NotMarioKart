@@ -1,0 +1,357 @@
+<html>
+	<head>
+		<title>Lab 1</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script type="text/javascript" src="dat.gui.min.js"></script>
+		<script type="text/javascript">
+			var gui;
+			var textGui;
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth/2)/window.innerHeight, 0.1, 1000 );
+			var helper = new THREE.CameraHelper( camera );
+			var camera2 = new THREE.PerspectiveCamera( 75, (window.innerWidth/2)/window.innerHeight, 0.1, 1000 );
+			var helper2 = new THREE.CameraHelper( camera2 );
+			var raycaster = new THREE.Raycaster();
+			var mouse = new THREE.Vector2();
+			var renderer = new THREE.WebGLRenderer();
+
+			// scene.add( helper );
+			scene.add( helper2 );
+
+
+			// var renderer2 = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.domElement.style.position = "relative";
+			// renderer2.setSize( window.innerWidth/2, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			renderer.autoClear = false;
+			// document.body.appendChild( renderer2.domElement );
+			// var cameraRig = new THREE.Group();
+			// cameraRig.add(camera);
+			// cameraRig.add(camera2);
+			var texture = new THREE.TextureLoader().load('box.jpg')
+			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			var material = new THREE.MeshPhongMaterial( { map: texture } );
+			var shape = new THREE.Mesh( geometry, material );
+			var floorColor = new THREE.MeshPhongMaterial({color:'#aaaaaa',wireframe:false});
+			var floor = new THREE.Mesh(new THREE.PlaneGeometry(500,500,8,8), floorColor);
+			var cross = new THREE.Mesh(new THREE.SphereGeometry(0.1,0.1,0.1), new THREE.MeshPhongMaterial({color:'#ffffff',wireframe:false}));
+			
+			// var materialLine = new THREE.LineBasicMaterial({ color: 0xAAFFAA });
+			// var xCross = 0.01, yCross = 0.01;
+			// var lineGeo = new THREE.Geometry();
+			// lineGeo.vertices.push(new THREE.Vector3(0, yCross, 0));
+			// lineGeo.vertices.push(new THREE.Vector3(0, -yCross, 0));
+			// lineGeo.vertices.push(new THREE.Vector3(0, 0, 0));
+			// lineGeo.vertices.push(new THREE.Vector3(xCross, 0, 0));    
+			// lineGeo.vertices.push(new THREE.Vector3(-xCross, 0, 0));
+			// var crosshairPercentX = 50;
+			// var crosshairPercentY = 50;
+			// var crosshairPositionX = (crosshairPercentX / 100) * 2 - 1;
+			// var crosshairPositionY = (crosshairPercentY / 100) * 2 - 1;
+
+			// var crosshair = new THREE.Line( lineGeo, material );
+			// crosshair.position.x = crosshairPositionX * camera.aspect;
+			// crosshair.position.y = crosshairPositionY;
+
+			// crosshair.position.z = 2;
+
+
+			var lAmbientLight = new THREE.AmbientLight(0x404040);
+			var lDirectionalLight = new THREE.DirectionalLight(0xd0d0d0,0.8);
+			var lHemisphereLight = new THREE.HemisphereLight(0xd0d0d0);
+			var lPointLight = new THREE.PointLight(0xd0d0d0);
+			var lSpotLight = new THREE.SpotLight(0xd0d0d0);
+
+			var lights = [];
+			lights.push(lAmbientLight);
+			lights.push(lDirectionalLight);
+			lights.push(lHemisphereLight);
+			lights.push(lPointLight);
+			lights.push(lSpotLight);
+
+			function lightsOff(){
+				for (var i = lights.length - 1; i >= 0; i--) {
+					lights[i].visible = false;
+				}
+			}
+
+			camera.position.z = 15;
+			camera.position.y = 10;
+			camera2.position.z = 3;
+			camera2.position.y = 1;
+			camera.position.x = 1;
+			camera2.rotation.x = 15 * Math.PI / 180;
+			floor.position.y = 0;
+			floor.rotateX( - Math.PI / 2);
+			// lAmbientLight.position.y = 10;
+
+			// camera2.position.z = -2;
+			// camera.add(crosshair);
+			// scene.add( floor );
+			var startVer = drawRaycastLine(raycaster,scene);
+
+			// Geometry
+			var cbgeometry = new THREE.PlaneGeometry( 500, 500, 8, 8 );
+
+			// Materials
+			var cbmaterials = []; 
+
+			cbmaterials.push( new THREE.MeshLambertMaterial( { color: 0xffffff, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshLambertMaterial( { color: 0x000000, side: THREE.DoubleSide }) );
+
+			var l = cbgeometry.faces.length / 2; // <-- Right here. This should still be 8x8 (64)
+
+			console.log("This should be 64: " + l);// Just for debugging puporses, make sure this is 64
+
+			for( var i = 0; i < l; i ++ ) {
+			j = i * 2; // <-- Added this back so we can do every other 'face'
+			cbgeometry.faces[ j ].materialIndex = ((i + Math.floor(i/8)) % 2); // The code here is changed, replacing all 'i's with 'j's. KEEP THE 8
+			cbgeometry.faces[ j + 1 ].materialIndex = ((i + Math.floor(i/8)) % 2); // Add this line in, the material index should stay the same, we're just doing the other half of the same face
+			}
+
+			// Mesh
+			cb = new THREE.Mesh( cbgeometry, cbmaterials );
+			cb.rotateX( - Math.PI / 2);
+			cb.position.y = 0;
+			scene.add( cb );
+			shape.add( cross );
+			scene.add( shape );
+
+
+			var width = 10;
+			var height = 20;
+			var rectLight = new THREE.RectAreaLight( 0xffffff, undefined,  width, height );
+			rectLight.intensity = 70.0;
+			rectLight.position.set( 0, 5, 0 );
+			rectLight.rotateX(- Math.PI / 2)
+
+			rectLightHelper = new THREE.RectAreaLightHelper( rectLight );
+
+			lights.push(rectLight);
+
+			lDirectionalLight.position.y = 2;
+			lAmbientLight.position.y = 2;
+			lSpotLight.position.y = 2;
+
+			lightsOff();
+			lAmbientLight.visible = true;
+
+			var dirLightHelper = new THREE.DirectionalLightHelper( lDirectionalLight, 5 );
+
+			scene.add(lAmbientLight);
+			scene.add(lDirectionalLight);
+			scene.add(lHemisphereLight);
+			scene.add(lPointLight);
+			scene.add(rectLight);
+			scene.add( rectLightHelper );
+			scene.add(lSpotLight);
+
+			var FizzyText = function() {
+			  this.erik = 'A00959090';
+			  this.xRotation = 0;
+			  this.yRotation = 0;
+			  this.scale = 1;
+			  this.xPosition = 0;
+			  this.yPosition = 1;
+			  this.zPosition = -2;
+			  this.cube = function(){
+			  	shape.geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			  };
+			  this.sphere = function(){
+			  	shape.geometry = new THREE.SphereGeometry( 1, 8, 8 );
+			  };
+			  this.plane = function(){
+			  	shape.geometry = new THREE.PlaneGeometry( 1, 1, 1 );
+			  };
+			  this.intensity = 0.5;
+
+			  this.ambientLight = function(){
+			  	lightsOff();
+			  	lAmbientLight.visible = true;
+			  	// let num = (Math.random() * (1 - 0.5) + 0.5).toFixed(4);
+			  	let intNum = textGui.intensity;
+				lAmbientLight.color.r = intNum;
+				lAmbientLight.color.g = intNum;
+				lAmbientLight.color.b = intNum;
+			  };
+			  this.directionalLight = function(){
+			  	lightsOff();
+			  	lDirectionalLight.visible = true;
+			  	let intNum = textGui.intensity;
+			  	lDirectionalLight.intensity = intNum;
+
+			  };
+			  this.hemisphereLight = function(){
+			  	lightsOff();
+			  	lHemisphereLight.visible = true;
+			  	let intNum = textGui.intensity;
+			  	lHemisphereLight.intensity = intNum;
+
+			  };
+			  this.pointLight = function(){
+			  	lightsOff();
+			  	lPointLight.visible = true;
+			  	let intNum = textGui.intensity;
+			  	lPointLight.intensity = intNum;
+
+
+			  };
+			  this.rectAreaLight = function(){
+			  	lightsOff();
+			  	rectLight.visible = true;
+			  	console.log(rectLight)
+			  	let intNum = textGui.intensity;
+			  	rectLight.intensity = intNum*1000;
+
+
+			  };
+			  this.spotLight = function(){
+			  	lightsOff();
+			  	lSpotLight.visible = true;
+			  	let intNum = textGui.intensity;
+			  	lSpotLight.intensity = intNum;
+
+
+			  };
+			};
+
+			window.onload = function() {
+			  textGui = new FizzyText();
+			  gui = new dat.GUI();
+			  gui.add(textGui, 'erik');
+			  gui.add(textGui, 'xRotation', -0.5, 0.5);
+			  gui.add(textGui, 'yRotation', -0.5, 0.5);
+			  gui.add(textGui, 'scale', 0.1, 2);
+			  gui.add(textGui, 'xPosition', -10, 10);
+			  gui.add(textGui, 'yPosition', -10, 10);
+			  gui.add(textGui, 'zPosition', -10, 10);
+			  gui.add(textGui, 'cube');
+			  gui.add(textGui, 'sphere');
+			  gui.add(textGui, 'plane');
+			  gui.add(textGui, 'intensity', 0,1);
+			  gui.add(textGui, 'ambientLight');
+			  gui.add(textGui, 'directionalLight');
+			  gui.add(textGui, 'hemisphereLight');
+			  gui.add(textGui, 'pointLight');
+			  gui.add(textGui, 'rectAreaLight');
+			  gui.add(textGui, 'spotLight');
+			};    
+
+			function translateRayX(x){
+				var resX = ( (event.clientX) / window.innerWidth ) * 2 - 1;
+
+				return resX;
+			}
+
+			function onMouseMove( event ) {
+				// calculate mouse position in normalized device coordinates
+				// (-1 to +1) for both components
+				if(event.clientX > window.innerWidth/2){
+					mouse.x = ( (event.clientX) / window.innerWidth ) * 4 - 3;
+					mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;		
+				} else {
+					mouse.x = -300;
+				}
+			}
+			function drawRaycastLine(raycaster,scenez) {
+			    let material2 = new THREE.LineBasicMaterial({
+			      color: 0x0fff3f,
+			      linewidth: 10
+			    });
+			    let geometry2 = new THREE.Geometry();
+			    let startVec = new THREE.Vector3(
+			      raycaster.ray.origin.x,
+			      raycaster.ray.origin.y,
+			      raycaster.ray.origin.z);
+
+			    let endVec = new THREE.Vector3(
+			      raycaster.ray.direction.x,
+			      raycaster.ray.direction.y,
+			      raycaster.ray.direction.z);
+			    
+			    // could be any number
+			    endVec.multiplyScalar(5000);
+			    
+			    // get the point in the middle
+			    let midVec = new THREE.Vector3();
+			    midVec.lerpVectors(startVec, endVec, 0.5);
+
+			    geometry2.vertices.push(startVec);
+			    geometry2.vertices.push(midVec);
+			    geometry2.vertices.push(endVec);
+
+			    console.log('vec start', startVec);
+			    console.log('vec mid', midVec);
+			    console.log('vec end', endVec);
+
+			    let line = new THREE.Line(geometry2, material2);
+			    scenez.add(line);
+			    return startVec;
+			  }
+
+			var animate = function () {
+				window.addEventListener( 'mousemove', onMouseMove, false );
+				requestAnimationFrame( animate );
+
+				if(textGui != null){
+					shape.rotation.x += textGui.xRotation;
+					shape.rotation.y += textGui.yRotation;
+					shape.scale.x = textGui.scale;
+					shape.scale.y = textGui.scale;
+					shape.scale.z = textGui.scale;
+					shape.position.x = textGui.xPosition;
+					shape.position.y = textGui.yPosition;
+					shape.position.z = textGui.zPosition;
+				}
+				raycaster.setFromCamera( mouse, camera2 );
+				var intersects = raycaster.intersectObjects( scene.children );
+				if(intersects.length == 0){
+					shape.material.color.set(0xf55)
+					cross.visible = false;
+				} else {				
+					for ( var i = 0; i < intersects.length; i++ ) {
+
+						// intersects[ i ].object.material.color.set( 0xff5555 );
+						cross.visible = true;
+						cross.position.x = intersects[i].point.x*2.2;
+						cross.position.y = intersects[i].point.y*2.2;
+						cross.position.z = intersects[i].point.z;
+
+						// var iLoc = intersects[i].point
+					}
+				}
+				
+				renderer.clear();
+				let endVer = scene.children[1].geometry.vertices[2];
+				endVer.x = raycaster.ray.direction.x;
+				endVer.y = raycaster.ray.direction.y;
+				endVer.z = raycaster.ray.direction.z;
+				scene.children[1].geometry.vertices[2] = endVer;
+				let midVec = new THREE.Vector3();
+			    midVec.lerpVectors(startVer, endVer, 0.5);
+				scene.children[1].geometry.vertices[1] = midVec;
+				
+				// renderer2.render(scene, camera2);
+				renderer.setViewport(0,0,window.innerWidth/2,window.innerHeight);
+				renderer.render(scene, camera);
+				renderer.setViewport(window.innerWidth/2,0,window.innerWidth/2,window.innerHeight);
+				renderer.render(scene, camera2);
+				// renderer.setViewport(window.innerWidth/2,1,window.innerWidth/2,window.innerHeight);
+				// renderer.render(scene, camera2);
+			};
+
+
+
+			animate();
+		</script>
+	</body>
+</html>
