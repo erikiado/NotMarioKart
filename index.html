@@ -40,10 +40,10 @@
 			
 			camera.position.z = 15;
 			camera.position.y = 10;
-			camera2.position.z = 3;
-			camera2.position.y = 1;
+			camera2.position.z = 0;
+			camera2.position.y = 500;
 			camera.position.x = 1;
-			camera2.rotation.x = 15 * Math.PI / 180;
+			camera2.rotation.x = -90 * Math.PI / 180;
 			// floor.position.y = 0;
 			// floor.rotateX( - Math.PI / 2);
 
@@ -75,12 +75,6 @@
 			scene.add( shape );
 
 
-			function translateRayX(x){
-				var resX = ( (event.clientX) / window.innerWidth ) * 2 - 1;
-
-				return resX;
-			}
-
 			function onMouseMove( event ) {
 				// calculate mouse position in normalized device coordinates
 				// (-1 to +1) for both components
@@ -101,6 +95,7 @@
 				
 				renderer.setViewport(0,0,window.innerWidth/2,window.innerHeight);
 				renderer.render(scene, camera);
+
 				renderer.setViewport(window.innerWidth/2,0,window.innerWidth/2,window.innerHeight);
 				renderer.render(scene, camera2);
 			};
