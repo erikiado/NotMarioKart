@@ -24,6 +24,7 @@
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.domElement.style.position = "relative";
 			// renderer2.setSize( window.innerWidth/2, window.innerHeight );
+			// renderer.setClearColor (0xaaeeff, 1); // Sky color
 			document.body.appendChild( renderer.domElement );
 			renderer.autoClear = false;
 
@@ -49,17 +50,23 @@
 
 			// FLOOR ///////////////////
 			// Geometry
-			var cbgeometry = new THREE.PlaneGeometry( 500, 500, 8, 8 )
+			var cbgeometry = new THREE.PlaneGeometry( 500, 500, 50, 50 )
 			// Materials
 			var cbmaterials = []; 
-			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.DoubleSide }) );
-			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xff8800, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0x00ff00, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0x00ffff, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0x0000ff, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xff00ff, side: THREE.DoubleSide }) );
+			nColors = cbmaterials.length;
 			var l = cbgeometry.faces.length / 2; // <-- Right here. This should still be 8x8 (64)
 			// console.log("This should be 64: " + l);// Just for debugging puporses, make sure this is 64
 			for( var i = 0; i < l; i ++ ) {
 				j = i * 2; // <-- Added this back so we can do every other 'face'
-				cbgeometry.faces[ j ].materialIndex = ((i + Math.floor(i/8)) % 2); // The code here is changed, replacing all 'i's with 'j's. KEEP THE 8
-				cbgeometry.faces[ j + 1 ].materialIndex = ((i + Math.floor(i/8)) % 2); // Add this line in, the material index should stay the same, we're just doing the other half of the same face
+				cbgeometry.faces[ j ].materialIndex = ((i + Math.floor(i/50)) % nColors); // The code here is changed, replacing all 'i's with 'j's. KEEP THE 8
+				cbgeometry.faces[ j + 1 ].materialIndex = ((i + Math.floor(i/50)) % nColors); // Add this line in, the material index should stay the same, we're just doing the other half of the same face
 			}
 			// Mesh
 			cb = new THREE.Mesh( cbgeometry, cbmaterials );
