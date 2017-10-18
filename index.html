@@ -10,21 +10,21 @@
 		<script src="three.min.js"></script>
 		<script type="text/javascript" src="dat.gui.min.js"></script>
 		<script type="text/javascript">
-
-            var gui;
+			var gui;
 			var textGui;
 			var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth/2)/window.innerHeight, 0.1, 1000 );
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 			// var helper = new THREE.CameraHelper( camera );
-			var camera2 = new THREE.PerspectiveCamera( 75, (window.innerWidth/2)/window.innerHeight, 0.1, 1000 );
+			var camera2 = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 );
 			// var helper2 = new THREE.CameraHelper( camera2 );
 			var renderer = new THREE.WebGLRenderer();
-
-			// scene.add( helper );
+			var WORLD_SIDE_SIZE = 7;
+			// scene.add( helper2 );
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.domElement.style.position = "relative";
 			// renderer2.setSize( window.innerWidth/2, window.innerHeight );
+			// renderer.setClearColor (0xaaeeff, 1); // Sky color
 			document.body.appendChild( renderer.domElement );
 			renderer.autoClear = false;
 
@@ -36,9 +36,9 @@
 			var shape = new THREE.Mesh( geometry, material );
 			// var floorColor = new THREE.MeshPhongMaterial({color:'#aaaaaa',wireframe:false});
 			// var floor = new THREE.Mesh(new THREE.PlaneGeometry(500,500,8,8), floorColor);
-
-
-            camera.position.z = 15;
+			
+			
+			camera.position.z = 15;
 			camera.position.y = 10;
 			camera2.position.z = 0;
 			camera2.position.y = 500;
@@ -50,17 +50,23 @@
 
 			// FLOOR ///////////////////
 			// Geometry
-			var cbgeometry = new THREE.PlaneGeometry( 500, 500, 8, 8 )
+			var cbgeometry = new THREE.PlaneGeometry( 500, 500, WORLD_SIDE_SIZE, WORLD_SIDE_SIZE )
 			// Materials
-            var cbmaterials = [];
-			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.DoubleSide }) );
-			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide }) );
+			var cbmaterials = []; 
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xff8800, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0x00ff00, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0x00ffff, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0x0000ff, side: THREE.DoubleSide }) );
+			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xff00ff, side: THREE.DoubleSide }) );
+			nColors = cbmaterials.length;
 			var l = cbgeometry.faces.length / 2; // <-- Right here. This should still be 8x8 (64)
 			// console.log("This should be 64: " + l);// Just for debugging puporses, make sure this is 64
 			for( var i = 0; i < l; i ++ ) {
 				j = i * 2; // <-- Added this back so we can do every other 'face'
-				cbgeometry.faces[ j ].materialIndex = ((i + Math.floor(i/8)) % 2); // The code here is changed, replacing all 'i's with 'j's. KEEP THE 8
-				cbgeometry.faces[ j + 1 ].materialIndex = ((i + Math.floor(i/8)) % 2); // Add this line in, the material index should stay the same, we're just doing the other half of the same face
+				cbgeometry.faces[ j ].materialIndex = ((i + Math.floor(i/WORLD_SIDE_SIZE)) % nColors); // The code here is changed, replacing all 'i's with 'j's. KEEP THE 8
+				cbgeometry.faces[ j + 1 ].materialIndex = ((i + Math.floor(i/WORLD_SIDE_SIZE)) % nColors); // Add this line in, the material index should stay the same, we're just doing the other half of the same face
 			}
 			// Mesh
 			cb = new THREE.Mesh( cbgeometry, cbmaterials );
@@ -86,6 +92,14 @@
 				// }
 			}
 
+			var animate = function () {
+				// window.addEventListener( 'mousemove', onMouseMove, false );
+				requestAnimationFrame( animate );
+			
+				renderer.clear();
+				
+				renderer.setViewport(0,0,window.innerWidth,window.innerHeight);
+				renderer.render(scene, camera);
             // Movement.
 
             var arrowMoveControls = {
@@ -144,13 +158,14 @@
                 renderer.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
                 renderer.render(scene, camera);
 
-                renderer.setViewport(window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight);
-                renderer.render(scene, camera2);
+				renderer.setViewport(window.innerWidth-200,50,150,150);
+				renderer.render(scene, camera2);
+			};
 
                 doMovementLoop();
             };
 
-            animate();
+			animate();
 		</script>
 	</body>
 </html>
