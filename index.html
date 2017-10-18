@@ -94,13 +94,11 @@
 
             var arrowMoveControls = {
                 up: 38,
-                down: 40,
                 left: 37,
                 right: 39
             };
             var wasdMoveControls = {
                 up: 87,
-                down: 83,
                 left: 65,
                 right: 68
             };
@@ -110,6 +108,7 @@
             var keyCodeMap = {};
 
             var speed = 0.5;
+            var rotationSpeed = 0.03;
 
             document.addEventListener('keydown', onKeyDownUp, false);
             document.addEventListener('keyup', onKeyDownUp, false);
@@ -121,18 +120,16 @@
 
             function doMovementLoop() {
                 if (keyCodeMap[moveControls.up]) {
-                    shape.position.z -= speed;
-                }
-                if (keyCodeMap[moveControls.down]) {
-                    shape.position.z += speed;
+                    shape.translateZ(-speed);
                 }
                 if (keyCodeMap[moveControls.left]) {
-                    shape.position.x -= speed;
+                    shape.rotateY(rotationSpeed);
                 }
                 if (keyCodeMap[moveControls.right]) {
-                    shape.position.x += speed;
+                    shape.rotateY(-rotationSpeed);
                 }
                 if (keyCodeMap[resetControl]) {
+                    shape.rotation.y = 0;
                     shape.position.set(0, shape.position.y, 0);
                 }
             }
