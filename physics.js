@@ -35,4 +35,30 @@ function doMovementLoop() {
         shape.rotation.y = 0;
         shape.position.set(0, shape.position.y, 0);
     }
+
+    if (shouldTheCarBeFallingDownNow()) {
+        fallDown();
+    }
+}
+
+function fallDown() {
+    shape.position.y -= speed;
+    shape.rotateY(-rotationSpeed);
+    shape.rotateZ(-rotationSpeed);
+}
+
+function shouldTheCarBeFallingDownNow() {
+    if (shape.position.x > WORLD_WIDTH/2 + CAR_SIZE_X) {
+        return true;
+    }
+    if (shape.position.x < -WORLD_WIDTH/2 + CAR_SIZE_X) {
+        return true;
+    }
+    if (shape.position.z > WORLD_HEIGHT/2 +  + CAR_SIZE_Z) {
+        return true;
+    }
+    if (shape.position.z < -WORLD_HEIGHT/2 -  + CAR_SIZE_Z) {
+        return true;
+    }
+    return false;
 }

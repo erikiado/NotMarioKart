@@ -16,7 +16,7 @@ renderer.autoClear = false;
 
 // Objects
 let texture = new THREE.TextureLoader().load('box.jpg')
-let geometry = new THREE.BoxGeometry( 1, 1, 1 );
+let geometry = new THREE.BoxGeometry( CAR_SIZE_X, CAR_SIZE_Y, CAR_SIZE_Z );
 let material = new THREE.MeshBasicMaterial( { map: texture } );
 let shape = new THREE.Mesh( geometry, material );
 // let floorColor = new THREE.MeshPhongMaterial({color:'#aaaaaa',wireframe:false});
