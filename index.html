@@ -13,13 +13,13 @@
 			var gui;
 			var textGui;
 			var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth/2)/window.innerHeight, 0.1, 1000 );
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 			// var helper = new THREE.CameraHelper( camera );
-			var camera2 = new THREE.PerspectiveCamera( 75, (window.innerWidth/2)/window.innerHeight, 0.1, 1000 );
+			var camera2 = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 );
 			// var helper2 = new THREE.CameraHelper( camera2 );
 			var renderer = new THREE.WebGLRenderer();
-
-			// scene.add( helper );
+			var WORLD_SIDE_SIZE = 8;
+			// scene.add( helper2 );
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.domElement.style.position = "relative";
@@ -49,7 +49,7 @@
 
 			// FLOOR ///////////////////
 			// Geometry
-			var cbgeometry = new THREE.PlaneGeometry( 500, 500, 8, 8 )
+			var cbgeometry = new THREE.PlaneGeometry( 500, 500, WORLD_SIDE_SIZE, WORLD_SIDE_SIZE )
 			// Materials
 			var cbmaterials = []; 
 			cbmaterials.push( new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.DoubleSide }) );
@@ -58,8 +58,8 @@
 			// console.log("This should be 64: " + l);// Just for debugging puporses, make sure this is 64
 			for( var i = 0; i < l; i ++ ) {
 				j = i * 2; // <-- Added this back so we can do every other 'face'
-				cbgeometry.faces[ j ].materialIndex = ((i + Math.floor(i/8)) % 2); // The code here is changed, replacing all 'i's with 'j's. KEEP THE 8
-				cbgeometry.faces[ j + 1 ].materialIndex = ((i + Math.floor(i/8)) % 2); // Add this line in, the material index should stay the same, we're just doing the other half of the same face
+				cbgeometry.faces[ j ].materialIndex = ((i + Math.floor(i/WORLD_SIDE_SIZE)) % 2); // The code here is changed, replacing all 'i's with 'j's. KEEP THE 8
+				cbgeometry.faces[ j + 1 ].materialIndex = ((i + Math.floor(i/WORLD_SIDE_SIZE)) % 2); // Add this line in, the material index should stay the same, we're just doing the other half of the same face
 			}
 			// Mesh
 			cb = new THREE.Mesh( cbgeometry, cbmaterials );
@@ -92,10 +92,10 @@
 			
 				renderer.clear();
 				
-				renderer.setViewport(0,0,window.innerWidth/2,window.innerHeight);
+				renderer.setViewport(0,0,window.innerWidth,window.innerHeight);
 				renderer.render(scene, camera);
 
-				renderer.setViewport(window.innerWidth/2,0,window.innerWidth/2,window.innerHeight);
+				renderer.setViewport(window.innerWidth-200,50,150,150);
 				renderer.render(scene, camera2);
 			};
 
