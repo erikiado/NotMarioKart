@@ -1,0 +1,36 @@
+{
+    "name": "notmariokart",
+    "version": "1.0.0",
+    "description": "Not Mario Kart game for Computer Graphics course.",
+    "directories": {
+        "lib": "lib"
+    },
+    "scripts": {
+        "start": "npm-run-all -p build:w serve",
+        "build": "gulp build",
+        "build:w": "gulp build:watch",
+        "serve": "serve"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/erikiado/NotMarioKart.git"
+    },
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/erikiado/NotMarioKart/issues"
+    },
+    "homepage": "https://github.com/erikiado/NotMarioKart#readme",
+    "devDependencies": {
+        "@types/three": "^0.84.27",
+        "babel-core": "^6.26.0",
+        "babel-preset-env": "^1.6.1",
+        "gulp": "^3.9.1",
+        "gulp-babel": "^7.0.0",
+        "gulp-concat": "^2.6.1",
+        "gulp-plumber": "^1.1.0",
+        "gulp-sourcemaps": "^2.6.1",
+        "gulp-uglify": "^3.0.0",
+        "npm-run-all": "^4.1.1",
+        "serve": "^6.3.1"
+    }
+}

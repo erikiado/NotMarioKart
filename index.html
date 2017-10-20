@@ -7,9 +7,12 @@
 		</style>
 	</head>
 	<body>
-		<script src="three.min.js"></script>
-		<script type="text/javascript" src="constants.js"></script>
-		<script type="text/javascript" src="physics.js"></script>
-		<script type="text/javascript" src="init.js"></script>
+        <script src="/lib/three.min.js"></script>
+        <script src="/js/dist/bundle.min.js"></script>
+        <script>
+            (function () {
+                NotMarioKart.init();
+            })();
+        </script>
 	</body>
 </html>
