@@ -5,7 +5,10 @@
 const NotMarioKart = (function () {
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer();
-    const miniMapCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const miniMapCamera = new THREE.OrthographicCamera(-WORLD_HEIGHT/2,
+                                                        WORLD_HEIGHT/2,
+                                                        WORLD_HEIGHT/2,
+                                                       -WORLD_HEIGHT/2, 400, 550);
 
     function buildFloor() {
         const geometry = new THREE.PlaneGeometry(
@@ -64,9 +67,10 @@ const NotMarioKart = (function () {
         renderer.clear();
 
         renderer.setViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-        renderer.render(scene, Player.camera);
+        renderer.render(scene, Player.getCamera());
 
         renderer.setViewport(WINDOW_WIDTH - 200, 50, 150, 150);
+        miniMapCamera.position.z = Player.playerObject.position.z;
         renderer.render(scene, miniMapCamera);
 
         Player.doMovementLoop();

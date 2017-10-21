@@ -3,12 +3,24 @@
  */
 
 const Player = (function () {
-    const camera = new THREE.PerspectiveCamera(
+    const povCamera = new THREE.PerspectiveCamera(
         75,
         WINDOW_WIDTH / WINDOW_HEIGHT,
         0.1,
         1000
     );
+
+    const trackingCamera = new THREE.PerspectiveCamera(
+        75,
+        WINDOW_WIDTH / WINDOW_HEIGHT,
+        0.1,
+        1000
+    );
+
+    let currentCamera = trackingCamera;
+    let getCamera = function() {
+        return currentCamera;
+    }
 
     const playerObject = makePlayerObject();
 
@@ -28,6 +40,7 @@ const Player = (function () {
                 right: 68
             }
         },
+        switchCamera: 67,
         reset: 8
     };
 
@@ -59,6 +72,14 @@ const Player = (function () {
         if (keyCodeMap[enabledControls.down]) {
             playerObject.translateZ(speed);
         }
+        if (keyCodeMap[controls.switchCamera]) {
+            if (currentCamera === povCamera) {
+                currentCamera = trackingCamera;
+            } else {
+                currentCamera = povCamera;
+            }
+            keyCodeMap[controls.switchCamera] = false;
+        }
         if (keyCodeMap[controls.reset]) {
             playerObject.rotation.y = 0;
             playerObject.position.set(0, playerObject.position.y, 0);
@@ -77,7 +98,11 @@ const Player = (function () {
 
         object.position.y = geometry.parameters.height / 2;
 
-        object.add(camera);
+        trackingCamera.position.y = CAR_SIZE_Y;
+        trackingCamera.position.z = CAR_SIZE_Z*4;
+
+        object.add(povCamera);
+        object.add(trackingCamera);
 
         return object;
     }
@@ -85,6 +110,6 @@ const Player = (function () {
     return {
         doMovementLoop: doMovementLoop,
         playerObject: playerObject,
-        camera: camera
+        getCamera: getCamera
     };
 })();
