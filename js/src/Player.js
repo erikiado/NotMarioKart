@@ -75,14 +75,9 @@ const Player = (function () {
         const material = new THREE.MeshBasicMaterial({ map: texture });
         const object = new THREE.Mesh(geometry, material);
 
-        object.position.y = object.geometry.parameters.height / 2;
-
-        camera.position.x = 1;
-        camera.position.y = 10;
-        camera.position.z = 15;
+        object.position.y = geometry.parameters.height / 2;
 
         object.add(camera);
-        NotMarioKart.addToScene(object);
 
         return object;
     }

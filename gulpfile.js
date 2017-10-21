@@ -5,7 +5,11 @@ const babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
 const plumber = require('gulp-plumber');
 
-let jsDirs = ['./js/src/**/*.js'];
+let jsDirs = ['./js/src/constants.js',
+              './js/src/Player.js',
+              './js/src/NotMarioKart.js']
+
+//let jsDirs = ['./js/src/**/*.js'];
 
 gulp.task('build', function() {
     return gulp

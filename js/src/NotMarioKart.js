@@ -7,10 +7,6 @@ const NotMarioKart = (function () {
     const renderer = new THREE.WebGLRenderer();
     const miniMapCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
 
-    function addToScene(object) {
-        scene.add(object);
-    }
-
     function buildFloor() {
         const geometry = new THREE.PlaneGeometry(
             WORLD_WIDTH,
@@ -19,7 +15,7 @@ const NotMarioKart = (function () {
             1
         );
         let materials = [];
-        for (let i = 0; i < ROAD_COLORS.length; i++) {
+        for (let i = 0; i < NUMBER_COLORS; i++) {
             materials.push(
                 new THREE.MeshBasicMaterial({
                     color: ROAD_COLORS[i],
@@ -27,13 +23,15 @@ const NotMarioKart = (function () {
                 })
             );
         }
-        const geoFacesLength = geometry.faces.length / 2; // <-- Right here. This should still be 8x8 (64)
+        const geoFacesLength = geometry.faces.length / 2;
         for (let i = 0; i < geoFacesLength; i++) {
             let j = i * 2; // <-- Added this back so we can do every other 'face'
+
             geometry.faces[j].materialIndex =
-                (i + Math.floor(i / WORLD_SIDE_SIZE)) % NUMBER_COLORS; // The code here is changed, replacing all 'i's with 'j's. KEEP THE 8
+                (i + Math.floor(i / WORLD_SIDE_SIZE)) % NUMBER_COLORS;
+
             geometry.faces[j + 1].materialIndex =
-                (i + Math.floor(i / WORLD_SIDE_SIZE)) % NUMBER_COLORS; // Add this line in, the material index should stay the same, we're just doing the other half of the same face
+                (i + Math.floor(i / WORLD_SIDE_SIZE)) % NUMBER_COLORS; // Other half of the same face
         }
 
         let floor = new THREE.Mesh(geometry, materials);
@@ -55,6 +53,8 @@ const NotMarioKart = (function () {
 
         buildFloor();
 
+        scene.add(Player.playerObject);
+
         loop();
     }
 
@@ -73,7 +73,6 @@ const NotMarioKart = (function () {
     }
 
     return {
-        init: init,
-        addToScene: addToScene
+        init: init
     };
 })();
