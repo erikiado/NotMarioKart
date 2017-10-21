@@ -5,10 +5,13 @@
 const NotMarioKart = (function () {
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer();
+    const miniMapRenderer = new THREE.WebGLRenderer();
     const miniMapCamera = new THREE.OrthographicCamera(-WORLD_HEIGHT/2,
                                                         WORLD_HEIGHT/2,
                                                         WORLD_HEIGHT/2,
-                                                       -WORLD_HEIGHT/2, 400, 550);
+                                                       -WORLD_HEIGHT/2,
+                                                        TOP_CAMERA_DIST-50,
+                                                        TOP_CAMERA_DIST+50);
 
     function buildFloor() {
         const geometry = new THREE.PlaneGeometry(
@@ -47,11 +50,21 @@ const NotMarioKart = (function () {
     function init() {
         renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.domElement.style.position = 'relative';
+        renderer.domElement.style.position = 'fixed';
         document.body.appendChild(renderer.domElement);
         renderer.autoClear = false;
 
-        miniMapCamera.position.y = 500;
+        miniMapRenderer.setSize(WINDOW_WIDTH/4, WINDOW_HEIGHT/4);
+        miniMapRenderer.setPixelRatio(window.devicePixelRatio);
+        miniMapRenderer.domElement.style.position = 'fixed';
+        miniMapRenderer.domElement.style.top = "5%";
+        miniMapRenderer.domElement.style.left = "70%";
+        miniMapRenderer.domElement.style.zIndex = "2";
+        miniMapRenderer.domElement.style.outline = "white solid";
+        document.body.appendChild(miniMapRenderer.domElement);
+        miniMapRenderer.autoClear = false;
+
+        miniMapCamera.position.y = TOP_CAMERA_DIST;
         miniMapCamera.rotation.x = -90 * Math.PI / 180;
 
         buildFloor();
@@ -65,15 +78,15 @@ const NotMarioKart = (function () {
         requestAnimationFrame(loop);
 
         renderer.clear();
-
         renderer.setViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
         renderer.render(scene, Player.getCamera());
 
-        renderer.setViewport(WINDOW_WIDTH - 200, 50, 150, 150);
-        miniMapCamera.position.z = Player.playerObject.position.z;
-        renderer.render(scene, miniMapCamera);
+        miniMapRenderer.clear();
+        miniMapRenderer.setViewport(0, 0, WINDOW_WIDTH/4, WINDOW_HEIGHT/4);
+        miniMapRenderer.render(scene, miniMapCamera);
 
         Player.doMovementLoop();
+        miniMapCamera.position.z = Player.playerObject.position.z;
     }
 
     return {

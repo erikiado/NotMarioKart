@@ -17,6 +17,7 @@ const ROAD_COLORS = [
 const NUMBER_COLORS = ROAD_COLORS.length;
 const WORLD_HEIGHT = 1000;
 const WORLD_WIDTH = 100;
+const TOP_CAMERA_DIST = 500;
 const CAR_SIZE_X = 10;
 const CAR_SIZE_Y = 10;
 const CAR_SIZE_Z = 10;
