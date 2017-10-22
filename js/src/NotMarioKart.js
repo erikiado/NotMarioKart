@@ -6,26 +6,50 @@ const NotMarioKart = (function () {
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer();
     const miniMapRenderer = new THREE.WebGLRenderer();
-    const miniMapCamera = new THREE.OrthographicCamera(-WORLD_HEIGHT/2,
-                                                        WORLD_HEIGHT/2,
-                                                        WORLD_HEIGHT/2,
-                                                       -WORLD_HEIGHT/2,
+    const miniMapCamera = new THREE.OrthographicCamera(-WINDOW_WIDTH,
+                                                        WINDOW_WIDTH,
+                                                        WINDOW_HEIGHT,
+                                                       -WINDOW_HEIGHT,
                                                         TOP_CAMERA_DIST-50,
                                                         TOP_CAMERA_DIST+50);
 
     function buildFloor() {
-        const geometry = new THREE.PlaneGeometry(
-            WORLD_WIDTH,
-            WORLD_HEIGHT,
-            WORLD_SIDE_SIZE,
-            1
-        );
+        let curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(   0,    0,  0),
+            new THREE.Vector3(   0,  500,  0),
+            new THREE.Vector3(-200,  500,  0),
+            new THREE.Vector3(-200,  800,  0),
+            new THREE.Vector3( 600,  800,  0),
+            new THREE.Vector3( 600,  500,  0),
+            new THREE.Vector3( 300,  500,  0),
+            new THREE.Vector3( 300,    0,  0),
+            new THREE.Vector3( 800,    0,  0),
+            new THREE.Vector3( 800, -500,  0),
+            new THREE.Vector3(   0, -500,  0)
+        ]);
+        curve.closed = true;
+
+        let extrudeSettings = {
+            steps: 100,
+            extrudePath: curve
+        };
+
+        // Shape that gets extruded through the curve
+        let shape = new THREE.Shape([
+            new THREE.Vector2(2*CAR_SIZE_Y, 0),
+            new THREE.Vector2(0,  5*CAR_SIZE_X),
+            new THREE.Vector2(0, -5*CAR_SIZE_X),
+        ]);
+
+        var geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+
         let materials = [];
         for (let i = 0; i < NUMBER_COLORS; i++) {
             materials.push(
                 new THREE.MeshBasicMaterial({
                     color: ROAD_COLORS[i],
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    //wireframe: true // This makes track more Tron-like
                 })
             );
         }
