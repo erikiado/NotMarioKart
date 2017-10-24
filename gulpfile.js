@@ -4,14 +4,15 @@ const uglify = require('gulp-uglify');
 const babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
 const plumber = require('gulp-plumber');
+const browserSync = require('browser-sync').create();
 
-let jsDirs = ['./js/src/constants.js',
-              './js/src/Player.js',
-              './js/src/NotMarioKart.js']
+const jsDirs = [
+    './js/src/constants.js',
+    './js/src/Player.js',
+    './js/src/NotMarioKart.js'
+];
 
-//let jsDirs = ['./js/src/**/*.js'];
-
-gulp.task('build', function() {
+gulp.task('build', function () {
     return gulp
         .src(jsDirs)
         .pipe(plumber())
@@ -27,6 +28,17 @@ gulp.task('build', function() {
         .pipe(gulp.dest('./js/dist/'));
 });
 
-gulp.task('build:watch', ['build'], function() {
-    gulp.watch(jsDirs, ['build']);
+gulp.task('build:reload', ['build'], function (done) {
+    browserSync.reload();
+    done();
+});
+
+gulp.task('build:watch', ['build'], function () {
+    browserSync.init({
+        server: {
+            baseDir: './'
+        }
+    });
+
+    gulp.watch(jsDirs, ['build:reload']);
 });

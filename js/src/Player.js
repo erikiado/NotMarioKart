@@ -20,7 +20,7 @@ const Player = (function () {
     let currentCamera = trackingCamera;
     let getCamera = function() {
         return currentCamera;
-    }
+    };
 
     const playerObject = makePlayerObject();
 
