@@ -61,7 +61,7 @@ const Player = (function() {
 
     function doMovementLoop() {
         if (keyCodeMap[enabledControls.up]) {
-            playerObject.translateZ(-speed);
+            playerObject.translateZ(speed);
         }
         if (keyCodeMap[enabledControls.left]) {
             playerObject.rotateY(
@@ -78,7 +78,7 @@ const Player = (function() {
             );
         }
         if (keyCodeMap[enabledControls.down]) {
-            playerObject.translateZ(speed);
+            playerObject.translateZ(-speed);
         }
         if (keyCodeMap[controls.switchCamera]) {
             if (currentCamera === povCamera) {
@@ -99,8 +99,9 @@ const Player = (function() {
         const object = loader.parse(playerCar);
 
         trackingCamera.position.y = object.scale.y * 10;
-        trackingCamera.position.z = object.scale.z * 20;
-        trackingCamera.rotateX(100);
+        trackingCamera.position.z = object.scale.z * -20;
+        // trackingCamera.rotateX(0 * Math.PI / 180);
+        trackingCamera.rotateY(180 * Math.PI / 180);
 
         object.add(povCamera);
         object.add(trackingCamera);
