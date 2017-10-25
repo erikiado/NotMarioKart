@@ -46,7 +46,7 @@ const Player = (function () {
 
     let enabledControls = controls.movement.arrows;
 
-    const speed = 1;
+    const speed = 2;
     const rotationSpeed = 0.03;
 
     const keyCodeMap = {};
