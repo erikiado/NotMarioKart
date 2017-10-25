@@ -2,7 +2,7 @@
  * Everything about the Player object, its camera, the movements ...
  */
 
-const Player = (function () {
+const Player = (function() {
     const povCamera = new THREE.PerspectiveCamera(
         75,
         WINDOW_WIDTH / WINDOW_HEIGHT,
@@ -18,7 +18,7 @@ const Player = (function () {
     );
 
     let currentCamera = trackingCamera;
-    let getCamera = function () {
+    let getCamera = function() {
         return currentCamera;
     };
 
@@ -46,7 +46,7 @@ const Player = (function () {
 
     let enabledControls = controls.movement.arrows;
 
-    const speed = 2;
+    const speed = 1;
     const rotationSpeed = 0.03;
 
     const keyCodeMap = {};
@@ -61,18 +61,24 @@ const Player = (function () {
 
     function doMovementLoop() {
         if (keyCodeMap[enabledControls.up]) {
-            playerObject.translateZ(-speed);
+            playerObject.translateZ(speed);
         }
         if (keyCodeMap[enabledControls.left]) {
-            playerObject.rotateY(keyCodeMap[enabledControls.down]
-                ? -rotationSpeed : rotationSpeed);
+            playerObject.rotateY(
+                keyCodeMap[enabledControls.down]
+                    ? -rotationSpeed
+                    : rotationSpeed
+            );
         }
         if (keyCodeMap[enabledControls.right]) {
-            playerObject.rotateY(keyCodeMap[enabledControls.down]
-                ? rotationSpeed : -rotationSpeed);
+            playerObject.rotateY(
+                keyCodeMap[enabledControls.down]
+                    ? rotationSpeed
+                    : -rotationSpeed
+            );
         }
         if (keyCodeMap[enabledControls.down]) {
-            playerObject.translateZ(speed);
+            playerObject.translateZ(-speed);
         }
         if (keyCodeMap[controls.switchCamera]) {
             if (currentCamera === povCamera) {
@@ -89,19 +95,13 @@ const Player = (function () {
     }
 
     function makePlayerObject() {
-        const texture = new THREE.TextureLoader().load('/assets/object-textures/player.jpg');
-        const geometry = new THREE.BoxGeometry(
-            CAR_SIZE_X,
-            CAR_SIZE_Y,
-            CAR_SIZE_Z
-        );
-        const material = new THREE.MeshBasicMaterial({ map: texture });
-        const object = new THREE.Mesh(geometry, material);
+        const loader = new THREE.ObjectLoader();
+        const object = loader.parse(playerCar);
 
-        object.position.y = geometry.parameters.height / 2;
-
-        trackingCamera.position.y = CAR_SIZE_Y;
-        trackingCamera.position.z = CAR_SIZE_Z * 4;
+        trackingCamera.position.y = object.scale.y * 10;
+        trackingCamera.position.z = object.scale.z * -20;
+        // trackingCamera.rotateX(0 * Math.PI / 180);
+        trackingCamera.rotateY(180 * Math.PI / 180);
 
         object.add(povCamera);
         object.add(trackingCamera);
