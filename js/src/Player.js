@@ -18,7 +18,7 @@ const Player = (function () {
     );
 
     let currentCamera = trackingCamera;
-    let getCamera = function() {
+    let getCamera = function () {
         return currentCamera;
     };
 
@@ -64,10 +64,12 @@ const Player = (function () {
             playerObject.translateZ(-speed);
         }
         if (keyCodeMap[enabledControls.left]) {
-            playerObject.rotateY(rotationSpeed);
+            playerObject.rotateY(keyCodeMap[enabledControls.down]
+                ? -rotationSpeed : rotationSpeed);
         }
         if (keyCodeMap[enabledControls.right]) {
-            playerObject.rotateY(-rotationSpeed);
+            playerObject.rotateY(keyCodeMap[enabledControls.down]
+                ? rotationSpeed : -rotationSpeed);
         }
         if (keyCodeMap[enabledControls.down]) {
             playerObject.translateZ(speed);
@@ -99,7 +101,7 @@ const Player = (function () {
         object.position.y = geometry.parameters.height / 2;
 
         trackingCamera.position.y = CAR_SIZE_Y;
-        trackingCamera.position.z = CAR_SIZE_Z*4;
+        trackingCamera.position.z = CAR_SIZE_Z * 4;
 
         object.add(povCamera);
         object.add(trackingCamera);
