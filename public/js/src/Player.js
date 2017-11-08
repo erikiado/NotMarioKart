@@ -23,6 +23,8 @@ const Player = (function() {
     };
 
     const playerObject = makePlayerObject();
+    var playerId = null;
+
 
     const controls = {
         movement: {
@@ -46,8 +48,10 @@ const Player = (function() {
 
     let enabledControls = controls.movement.arrows;
 
-    const speed = 1;
-    const rotationSpeed = 0.03;
+    let speed = 1;
+    let maxSpeed = 5;
+    const acceleration = 0.05;
+    const rotationSpeed = 0.1;
 
     const keyCodeMap = {};
 
@@ -59,9 +63,13 @@ const Player = (function() {
     document.addEventListener('keydown', onKeyMove, false);
     document.addEventListener('keyup', onKeyMove, false);
 
-    function doMovementLoop() {
+    function doMovementLoop(groupBlocks) {
         if (keyCodeMap[enabledControls.up]) {
-            playerObject.translateZ(speed);
+            if(speed<maxSpeed){
+                speed += acceleration;
+                // speed = Math.Clamp(speed,maxSpeed,Time.timeDelta);
+            }
+            // playerObject.translateZ(speed);
         }
         if (keyCodeMap[enabledControls.left]) {
             playerObject.rotateY(
@@ -78,8 +86,12 @@ const Player = (function() {
             );
         }
         if (keyCodeMap[enabledControls.down]) {
-            playerObject.translateZ(-speed);
+            if(speed>0.1){
+                speed -= acceleration;
+                // speed = Mathf.Clamp(speed,maxSpeed,Time.timeDelta);
+            }
         }
+        playerObject.translateZ(speed);
         if (keyCodeMap[controls.switchCamera]) {
             if (currentCamera === povCamera) {
                 currentCamera = trackingCamera;
@@ -92,6 +104,27 @@ const Player = (function() {
             playerObject.rotation.y = 0;
             playerObject.position.set(0, playerObject.position.y, 0);
         }
+
+        // for (var i = groupBlocks.length - 1; i >= 0; i--) {
+            // let pos = groupBlocks[i].position;
+    //     let po = playerObject.children[2].children[0]
+    // for (var vertexIndex = 0; vertexIndex < po.geometry.vertices.length; vertexIndex++)
+    // {       
+    //     var localVertex = po.geometry.vertices[vertexIndex].clone();
+    //     var globalVertex = localVertex.applyMatrixplayerObject.matrix.multiplyVector3();
+    //     var directionVector = globalVertex.subSelf( po.position );
+
+    //     var ray = new THREE.Ray( po.position, directionVector.clone().normalize() );
+    //     var collisionResults = ray.intersectObjects( groupBlocks );
+    //     if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ) 
+    //     {
+    //         console.log('perdistre')
+    //         // a collision occurred... do something...
+    //     }
+    // }
+            // if((playerObject.position.x+5 < pos.x && playerObject.position.z+5 < pos.z)|| (playerObject.position.x-5 > pos.x && playerObject.position.z+5 > pos.z))
+        // console.log(groupBlocks[i])
+        // }
     }
 
     function makePlayerObject() {
@@ -112,6 +145,7 @@ const Player = (function() {
     return {
         doMovementLoop: doMovementLoop,
         playerObject: playerObject,
-        getCamera: getCamera
+        getCamera: getCamera,
+        playerId: playerId
     };
 })();

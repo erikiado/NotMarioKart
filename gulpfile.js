@@ -7,9 +7,9 @@ const plumber = require('gulp-plumber');
 const browserSync = require('browser-sync').create();
 
 const jsDirs = [
-    './js/src/constants.js',
-    './js/src/Player.js',
-    './js/src/NotMarioKart.js'
+    './public/js/src/constants.js',
+    './public/js/src/NotMarioKart.js',
+    './public/js/src/Player.js'
 ];
 
 gulp.task('build', function () {
@@ -25,7 +25,7 @@ gulp.task('build', function () {
         .pipe(concat('bundle.min.js'))
         .pipe(uglify())
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./js/dist/'));
+        .pipe(gulp.dest('./public/js/dist/'));
 });
 
 gulp.task('build:reload', ['build'], function (done) {
@@ -40,5 +40,5 @@ gulp.task('build:watch', ['build'], function () {
         }
     });
 
-    gulp.watch(jsDirs, ['build:reload']);
+    gulp.watch(jsDirs, ['build']);
 });

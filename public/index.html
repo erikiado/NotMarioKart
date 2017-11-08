@@ -9,6 +9,20 @@
 	<body>
         <script src="/lib/three.min.js"></script>
         <script src="/lib/playerCar.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+		<script>
+		  var socket = io();
+		  socket.on('connect',()=>{
+		  	console.log(socket.id)
+		  	console.log(Player)
+		  	Player.playerId = socket.id;
+		  });
+		  socket.on('updatePlayers',(info) => {
+		  	if(info['id'] !== Player.playerId){
+		  		console.log(info);
+		  	}
+		  });
+		</script>
         <script src="/js/dist/bundle.min.js"></script>
         <script>
             (function () {

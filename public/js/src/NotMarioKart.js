@@ -15,6 +15,22 @@ const NotMarioKart = (function() {
         TOP_CAMERA_DIST + 50
     );
 
+    function emitPlayerInfo(){
+        let p = Player.playerObject;
+
+        let info = {'x':p.position.x,
+                    'y':p.position.y,
+                    'z':p.position.z,
+                    'id': Player.playerId};
+        socket.emit('playerStatus',info);
+    }
+
+    function initSocketEvent(){
+        socket.emit('gameStart','Started');
+        var t = setInterval(emitPlayerInfo,1000);
+        // clearInterval(t);
+    }
+
     function buildFloor() {
         let curve = new THREE.CatmullRomCurve3([
             new THREE.Vector3(0, 0, 0),
@@ -96,7 +112,7 @@ const NotMarioKart = (function() {
         buildFloor();
 
         scene.add(Player.playerObject);
-
+        initSocketEvent();
         loop();
     }
 
