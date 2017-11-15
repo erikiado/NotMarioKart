@@ -89,14 +89,31 @@ const Player = (function() {
             keyCodeMap[controls.switchCamera] = false;
         }
         if (keyCodeMap[controls.reset]) {
+            playerObject.rotation.x = 0;
+            playerObject.position.set(0, playerObject.position.x, 0);
             playerObject.rotation.y = 0;
             playerObject.position.set(0, playerObject.position.y, 0);
+            playerObject.rotation.z = 0;
+            playerObject.position.set(0, playerObject.position.z, 0);
+        }
+    }
+
+    function crash() {
+        if (keyCodeMap[enabledControls.up]) {
+            playerObject.translateZ(-speed);
+        } else {
+            playerObject.translateZ(speed);
         }
     }
 
     function makePlayerObject() {
         const loader = new THREE.ObjectLoader();
         const object = loader.parse(playerCar);
+
+        povCamera.position.y = object.scale.y * 2;
+        povCamera.position.z = object.scale.z * 4;
+        // trackingCamera.rotateX(0 * Math.PI / 180);
+        povCamera.rotateY(180 * Math.PI / 180);
 
         trackingCamera.position.y = object.scale.y * 10;
         trackingCamera.position.z = object.scale.z * -20;
@@ -112,6 +129,7 @@ const Player = (function() {
     return {
         doMovementLoop: doMovementLoop,
         playerObject: playerObject,
-        getCamera: getCamera
+        getCamera: getCamera,
+        crash: crash
     };
 })();

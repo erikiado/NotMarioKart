@@ -8,6 +8,8 @@ const browserSync = require('browser-sync').create();
 
 const jsDirs = [
     './js/src/constants.js',
+    './js/src/Physics.js',
+    './js/src/Box.js',
     './js/src/Player.js',
     './js/src/NotMarioKart.js'
 ];

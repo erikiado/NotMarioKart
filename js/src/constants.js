@@ -21,3 +21,4 @@ const TOP_CAMERA_DIST = 500;
 const CAR_SIZE_X = 10;
 const CAR_SIZE_Y = 10;
 const CAR_SIZE_Z = 10;
+const BOX_SIZE = 10;
