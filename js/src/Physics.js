@@ -16,7 +16,7 @@ const Physics = (function() {
         raycaster.set(hell, oneDirection);
 
         // Try to intersect with floor.
-        intersects = raycaster.intersectObject(floor, true);
+        let intersects = raycaster.intersectObject(floor, true);
         if (!intersects.length || object.position.y < 0) {
             object.position.y += g;
         }
