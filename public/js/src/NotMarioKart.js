@@ -15,9 +15,11 @@ const NotMarioKart = (function() {
         TOP_CAMERA_DIST + 50
     );
     var floor;
+    //Box objects
     var objects = [];
-
     const players = {};
+    //Box positions for other players
+    var boxes = [];
 
     function initSocketEvent() {
         var socket = io({ transports: ['websocket'], upgrade: false });
@@ -39,6 +41,11 @@ const NotMarioKart = (function() {
                 car.rotation.set(rot.x, rot.y, rot.z);
                 scene.add(car);
             });
+            console.log(data);
+            if(data.length == 0){
+                addBoxes();
+                socket.emit('send-boxes',boxes);
+            }
         });
 
         socket.on('player-joined', function(player) {
@@ -54,6 +61,15 @@ const NotMarioKart = (function() {
             car.position.set(pos.x, pos.y, pos.z);
             car.rotation.set(rot.x, rot.y, rot.z);
             scene.add(car);
+        });
+
+        socket.on('receive-boxes', function(boxs) {
+            // console.log('[player-left]', playerId);
+            boxes = boxs;
+            addBoxesPosition();
+            // const car = players[playerId].//car;
+            // scene.remove(car);
+            // delete players[playerId];
         });
 
         socket.on('player-left', function(playerId) {
@@ -116,7 +132,7 @@ const NotMarioKart = (function() {
                     z: p.rotation._z
                 }
             });
-        }, 1000 / 24);
+        }, 1000 / 25);
     }
 
     function makeCarObject() {
@@ -191,7 +207,26 @@ const NotMarioKart = (function() {
             let box = new Box(Math.floor(Math.random() * ((max-min)+1) + min),
                               BOX_SIZE/2,
                               Math.floor(Math.random() * ((max-min)+1) + min));
+            // Add only if it's over the floor.
+            scene.updateMatrixWorld();
+            Physics.gravity(box.mesh, floor);
+            if (box.mesh.position.y == BOX_SIZE/2) {
+                objects.push(box);
+                boxes.push({
+                    x: box.mesh.position.x,
+                    z: box.mesh.position.z
+                });
+                scene.add(box.mesh);
+            }
+        }
+    }
 
+    function addBoxesPosition() {
+        for (let i = 0; i < boxes.length; i++) {
+            // Create random box.
+            let box = new Box(boxes[i].x,
+                              BOX_SIZE/2,
+                              boxes[i].z);
             // Add only if it's over the floor.
             scene.updateMatrixWorld();
             Physics.gravity(box.mesh, floor);
@@ -223,7 +258,7 @@ const NotMarioKart = (function() {
         miniMapCamera.rotation.x = -90 * Math.PI / 180;
 
         buildFloor();
-        addBoxes();
+        // addBoxes();
 
         scene.add(Player.playerObject);
         initSocketEvent();
