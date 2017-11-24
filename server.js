@@ -36,11 +36,10 @@ io.on('connection', function(socket) {
             x: 0, y: 0, z: 0
         }
     };
-    players[socket.id] = newPlayer;
-    console.log(players);
-    if(players.length != 0){
+    if(Object.values(players).length != 0){
         socket.emit('receive-boxes', boxes);
     }
+    players[socket.id] = newPlayer;
     socket.broadcast.emit('player-joined', newPlayer);
 
     socket.on('disconnect', function() {

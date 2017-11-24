@@ -71,17 +71,13 @@ const NotMarioKart = (function() {
         });
 
         socket.on('receive-boxes', function(boxs) {
-            // console.log('[player-left]', playerId);
             boxes = boxs;
             addBoxesPosition();
-            // const car = players[playerId].//car;
-            // scene.remove(car);
-            // delete players[playerId];
         });
 
-        socket.on('player-lap', function(){
+        // socket.on('player-lap', function(){
 
-        });
+        // });
 
         socket.on('player-left', function(playerId) {
             toastr.error(`Player ${playerId} has left.`);
