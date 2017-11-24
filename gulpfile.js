@@ -9,7 +9,7 @@ const jsDirs = [
     './public/js/src/constants.js',
     './public/js/src/Physics.js',
     './public/js/src/Box.js',
-    './public/js/src/Player.js'
+    './public/js/src/Player.js',
     './public/js/src/NotMarioKart.js',
 ];
 

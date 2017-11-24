@@ -99,11 +99,13 @@ const Player = (function() {
     }
 
     function crash() {
-        if (keyCodeMap[enabledControls.up]) {
-            playerObject.translateZ(-speed);
-        } else {
-            playerObject.translateZ(speed);
-        }
+        // acceleration = 0;
+        speed = 0;
+        // if (keyCodeMap[enabledControls.up]) {
+        //     playerObject.translateZ(-speed);
+        // } else {
+        //     playerObject.translateZ(speed);
+        // }
 
         // for (var i = groupBlocks.length - 1; i >= 0; i--) {
         // let pos = groupBlocks[i].position;
