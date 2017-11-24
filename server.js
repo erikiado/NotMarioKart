@@ -25,9 +25,10 @@ let boxes;
 io.on('connection', function(socket) {
     console.log('[connection]', socket.id);
     socket.emit('all-players', Object.values(players));
+    const playersLength = Object.values(players).length;
     const newPlayer = {
         id: socket.id,
-        playerNum: Object.values(players).length,
+        playerNum: playersLength,
         lap: 0,
         position: {
             x: 0, y: 0, z: 0
@@ -36,7 +37,7 @@ io.on('connection', function(socket) {
             x: 0, y: 0, z: 0
         }
     };
-    if(Object.values(players).length != 0){
+    if(playersLength != 0){
         socket.emit('receive-boxes', boxes);
     }
     players[socket.id] = newPlayer;
