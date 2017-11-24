@@ -21,4 +21,6 @@ const TOP_CAMERA_DIST = 50;
 const CAR_SIZE_X = 10;
 const CAR_SIZE_Y = 10;
 const CAR_SIZE_Z = 10;
+const MINICAM_FACTOR = 1.5;
 const BOX_SIZE = 10;
+const CHECK_SIZE = 100;

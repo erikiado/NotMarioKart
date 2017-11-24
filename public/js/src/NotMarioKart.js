@@ -7,16 +7,17 @@ const NotMarioKart = (function() {
     const renderer = new THREE.WebGLRenderer();
     const miniMapRenderer = new THREE.WebGLRenderer();
     const miniMapCamera = new THREE.OrthographicCamera(
-        -WINDOW_WIDTH,
-        WINDOW_WIDTH,
-        WINDOW_HEIGHT,
-        -WINDOW_HEIGHT,
+        -WINDOW_WIDTH/MINICAM_FACTOR,
+        WINDOW_WIDTH/MINICAM_FACTOR,
+        WINDOW_HEIGHT/MINICAM_FACTOR,
+        -WINDOW_HEIGHT/MINICAM_FACTOR,
         TOP_CAMERA_DIST - 50,
         TOP_CAMERA_DIST + 50
     );
     var floor;
     //Box objects
     var objects = [];
+    var checkpoints = [];
     const players = {};
     //Box positions for other players
     var boxes = [];
@@ -205,6 +206,28 @@ const NotMarioKart = (function() {
         scene.add(floor);
     }
 
+    function addCheckpoints() {
+        let curvePoints = [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(300, 0, 580),
+            new THREE.Vector3(250, 0, -200),
+            new THREE.Vector3(200, 0, -870),
+            new THREE.Vector3(0, 0, -500),
+        ];
+
+        for (let i = 0; i < curvePoints.length; i++) {
+            // console.log(curvePoints[i]);
+            let check = new Checkpoint(curvePoints[i].x,
+                              BOX_SIZE/2,
+                              curvePoints[i].z);
+            scene.updateMatrixWorld();
+            // if (i != curvePoints.length-1) {
+                checkpoints.push(check);
+                scene.add(check.mesh);
+            // }
+        }
+    }
+
     function addBoxes() {
         let min = -2000;
         let max =  2000;
@@ -226,6 +249,7 @@ const NotMarioKart = (function() {
             }
         }
     }
+
 
     function addBoxesPosition() {
         for (let i = 0; i < boxes.length; i++) {
@@ -265,6 +289,7 @@ const NotMarioKart = (function() {
 
         buildFloor();
         // addBoxes();
+        addCheckpoints();
 
         scene.add(Player.playerObject);
         initSocketEvent();
