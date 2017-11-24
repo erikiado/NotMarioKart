@@ -25,10 +25,8 @@ const Player = (function() {
     const playerObject = makePlayerObject();
     var playerId = null;
 
-
     const controls = {
         movement: {
-            // TODO: these should be in a settings menu once we have one.
             arrows: {
                 up: 38,
                 down: 40,
@@ -48,10 +46,10 @@ const Player = (function() {
 
     let enabledControls = controls.movement.arrows;
 
-    let speed = 1;
+    let speed = 0;
     let maxSpeed = 5;
     const acceleration = 0.05;
-    const rotationSpeed = 0.1;
+    const rotationSpeed = 0.05;
 
     const keyCodeMap = {};
 
@@ -63,32 +61,22 @@ const Player = (function() {
     document.addEventListener('keydown', onKeyMove, false);
     document.addEventListener('keyup', onKeyMove, false);
 
-    function doMovementLoop(groupBlocks) {
+    function doMovementLoop() {
         if (keyCodeMap[enabledControls.up]) {
-            if(speed<maxSpeed){
+            if (speed < maxSpeed) {
                 speed += acceleration;
-                // speed = Math.Clamp(speed,maxSpeed,Time.timeDelta);
             }
-            // playerObject.translateZ(speed);
         }
         if (keyCodeMap[enabledControls.left]) {
-            playerObject.rotateY(
-                keyCodeMap[enabledControls.down]
-                    ? -rotationSpeed
-                    : rotationSpeed
-            );
+            playerObject.rotateY(rotationSpeed);
         }
         if (keyCodeMap[enabledControls.right]) {
-            playerObject.rotateY(
-                keyCodeMap[enabledControls.down]
-                    ? rotationSpeed
-                    : -rotationSpeed
-            );
+            playerObject.rotateY(-rotationSpeed);
         }
         if (keyCodeMap[enabledControls.down]) {
-            if(speed>0.1){
+            if (speed > 0) {
                 speed -= acceleration;
-                // speed = Mathf.Clamp(speed,maxSpeed,Time.timeDelta);
+                speed = Math.max(0, speed);
             }
         }
         playerObject.translateZ(speed);
@@ -106,23 +94,23 @@ const Player = (function() {
         }
 
         // for (var i = groupBlocks.length - 1; i >= 0; i--) {
-            // let pos = groupBlocks[i].position;
-    //     let po = playerObject.children[2].children[0]
-    // for (var vertexIndex = 0; vertexIndex < po.geometry.vertices.length; vertexIndex++)
-    // {       
-    //     var localVertex = po.geometry.vertices[vertexIndex].clone();
-    //     var globalVertex = localVertex.applyMatrixplayerObject.matrix.multiplyVector3();
-    //     var directionVector = globalVertex.subSelf( po.position );
+        // let pos = groupBlocks[i].position;
+        //     let po = playerObject.children[2].children[0]
+        // for (var vertexIndex = 0; vertexIndex < po.geometry.vertices.length; vertexIndex++)
+        // {
+        //     var localVertex = po.geometry.vertices[vertexIndex].clone();
+        //     var globalVertex = localVertex.applyMatrixplayerObject.matrix.multiplyVector3();
+        //     var directionVector = globalVertex.subSelf( po.position );
 
-    //     var ray = new THREE.Ray( po.position, directionVector.clone().normalize() );
-    //     var collisionResults = ray.intersectObjects( groupBlocks );
-    //     if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ) 
-    //     {
-    //         console.log('perdistre')
-    //         // a collision occurred... do something...
-    //     }
-    // }
-            // if((playerObject.position.x+5 < pos.x && playerObject.position.z+5 < pos.z)|| (playerObject.position.x-5 > pos.x && playerObject.position.z+5 > pos.z))
+        //     var ray = new THREE.Ray( po.position, directionVector.clone().normalize() );
+        //     var collisionResults = ray.intersectObjects( groupBlocks );
+        //     if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() )
+        //     {
+        //         console.log('perdistre')
+        //         // a collision occurred... do something...
+        //     }
+        // }
+        // if((playerObject.position.x+5 < pos.x && playerObject.position.z+5 < pos.z)|| (playerObject.position.x-5 > pos.x && playerObject.position.z+5 > pos.z))
         // console.log(groupBlocks[i])
         // }
     }

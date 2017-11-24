@@ -4,7 +4,6 @@ const uglify = require('gulp-uglify');
 const babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
 const plumber = require('gulp-plumber');
-const browserSync = require('browser-sync').create();
 
 const jsDirs = [
     './public/js/src/constants.js',
@@ -28,17 +27,6 @@ gulp.task('build', function () {
         .pipe(gulp.dest('./public/js/dist/'));
 });
 
-gulp.task('build:reload', ['build'], function (done) {
-    browserSync.reload();
-    done();
-});
-
 gulp.task('build:watch', ['build'], function () {
-    browserSync.init({
-        server: {
-            baseDir: './'
-        }
-    });
-
     gulp.watch(jsDirs, ['build']);
 });

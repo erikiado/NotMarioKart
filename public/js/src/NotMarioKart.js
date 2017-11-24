@@ -15,20 +15,112 @@ const NotMarioKart = (function() {
         TOP_CAMERA_DIST + 50
     );
 
-    function emitPlayerInfo(){
-        let p = Player.playerObject;
+    const players = {};
 
-        let info = {'x':p.position.x,
-                    'y':p.position.y,
-                    'z':p.position.z,
-                    'id': Player.playerId};
-        socket.emit('playerStatus',info);
+    function initSocketEvent() {
+        var socket = io({ transports: ['websocket'], upgrade: false });
+
+        // TODO: show modal with name form, then emit name
+
+        socket.on('all-players', function(data) {
+            console.log('[all-players]', data);
+            data.forEach(function(player) {
+                const pos = player.position;
+                const rot = player.rotation;
+                const car = makeCarObject();
+                players[player.id] = {
+                    position: pos,
+                    rotation: rot,
+                    car: car
+                };
+                car.position.set(pos.x, pos.y, pos.z);
+                car.rotation.set(rot.x, rot.y, rot.z);
+                scene.add(car);
+            });
+        });
+
+        socket.on('player-joined', function(player) {
+            console.log('[player-joined]', player);
+            const pos = player.position;
+            const rot = player.rotation;
+            const car = makeCarObject();
+            players[player.id] = {
+                position: pos,
+                rotation: rot,
+                car: car
+            };
+            car.position.set(pos.x, pos.y, pos.z);
+            car.rotation.set(rot.x, rot.y, rot.z);
+            scene.add(car);
+        });
+
+        socket.on('player-left', function(playerId) {
+            console.log('[player-left]', playerId);
+            const car = players[playerId].car;
+            scene.remove(car);
+            delete players[playerId];
+        });
+
+        socket.on('update-player', function(player) {
+            console.log('[update-player]', player);
+            const id = player.id;
+            const pos = player.position;
+            const rot = player.rotation;
+            const p = players[id];
+            p.car.position.set(pos.x, pos.y, pos.z);
+            p.car.rotation.set(rot.x, rot.y, rot.z);
+        });
+
+        socket.on('start-countdown', function(seconds) {
+            console.log('[start-countdown]', seconds);
+            // TODO: show "x seconds before start"
+        });
+
+        socket.on('start', function() {
+            console.log('[start]');
+            // TODO: notify the game has started
+            // TODO: disable moving if not started
+            // TODO: everyone needs a name first (don't hide modal)
+            // TODO: everyone needs to be ready
+            // TODO: 2+ players
+        });
+
+        socket.on('finished', function(time) {
+            console.log('[finished]', time);
+            // TODO: show modal "waiting for others, your time is x"
+        });
+
+        socket.on('stop', function(players) {
+            console.log('[stop]', stop);
+            // TODO: all players are finished, show ranking and play again button
+            players.forEach(function(player) {
+                // sorted by ranking :-)
+                const name = player.name;
+                const time = time;
+            });
+        });
+
+        window.setInterval(function() {
+            const p = Player.playerObject;
+            socket.emit('update-player', {
+                position: {
+                    x: p.position.x,
+                    y: p.position.y,
+                    z: p.position.z
+                },
+                rotation: {
+                    x: p.rotation._x,
+                    y: p.rotation._y,
+                    z: p.rotation._z
+                }
+            });
+        }, 1000 / 24);
     }
 
-    function initSocketEvent(){
-        socket.emit('gameStart','Started');
-        var t = setInterval(emitPlayerInfo,1000);
-        // clearInterval(t);
+    function makeCarObject() {
+        const loader = new THREE.ObjectLoader();
+        const object = loader.parse(playerCar);
+        return object;
     }
 
     function buildFloor() {
@@ -126,6 +218,14 @@ const NotMarioKart = (function() {
         miniMapRenderer.clear();
         miniMapRenderer.setViewport(0, 0, WINDOW_WIDTH / 4, WINDOW_HEIGHT / 4);
         miniMapRenderer.render(scene, miniMapCamera);
+
+        // for (let id in players) {
+        //     const p = players[id];
+        //     const pos = p.position;
+        //     const rot = p.rotation;
+        //     p.car.position.set(pos.x, pos.y, pos.z);
+        //     p.car.rotation.set(rot.x, rot.y, rot.z);
+        // }
 
         Player.doMovementLoop();
         miniMapCamera.position.z = Player.playerObject.position.z;
