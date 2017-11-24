@@ -26,9 +26,11 @@ const NotMarioKart = (function() {
     var currentCheckpoint;
     var lastCheckpoint = 0;
     var otherPlayersModal;
+    var socket;
+    var waitingModal;
 
     function initSocketEvent() {
-        var socket = io({ transports: ['websocket'], upgrade: false });
+        socket = io({ transports: ['websocket'], upgrade: false });
 
         var modal = picoModal({
             content:
@@ -38,17 +40,13 @@ const NotMarioKart = (function() {
         }).show();
 
         $('#playerNameBtn').on('click', function() {
-            socket.emit('player-name', $('#playerName').val());
+            socket.emit('player-ready', $('#playerName').val());
             modal.close();
-
-            console.log(players.length);
-            if (Object.values(players).length === 0) {
-                var waitingModal = picoModal({
-                    content: 'Waiting for other players...',
-                    closeButton: false,
-                    overlayClose: false
-                }).show();
-            }
+            waitingModal = picoModal({
+                content: 'Waiting for other players...',
+                closeButton: false,
+                overlayClose: false
+            }).show();
         });
 
         socket.on('all-players', function(data) {
@@ -66,8 +64,7 @@ const NotMarioKart = (function() {
                 car.rotation.set(rot.x, rot.y, rot.z);
                 scene.add(car);
             });
-            console.log(data);
-            if (data.length == 0) {
+            if(data.length == 0){
                 addBoxes();
                 socket.emit('send-boxes', boxes);
             }
@@ -90,13 +87,14 @@ const NotMarioKart = (function() {
         });
 
         socket.on('receive-boxes', function(boxs) {
-            // console.log('[player-left]', playerId);
             boxes = boxs;
             addBoxesPosition();
-            // const car = players[playerId].//car;
-            // scene.remove(car);
-            // delete players[playerId];
         });
+
+
+        // socket.on('player-lap', function(){
+
+        // });
 
         socket.on('player-left', function(playerId) {
             toastr.error(`Player ${playerId} has left.`);
@@ -116,20 +114,30 @@ const NotMarioKart = (function() {
             p.car.rotation.set(rot.x, rot.y, rot.z);
         });
 
-        socket.on('start-countdown', function(seconds) {
-            toastr.info(`${seconds} seconds before the race starts.`);
-            console.log('[start-countdown]', seconds);
-            // TODO: show "x seconds before start"
+        socket.on('start-race', function() {
+            waitingModal.close();
+            let seconds = 3;
+            (function move(seconds) {
+                if(seconds >= 0) {
+                    if(seconds == 0){
+                        toastr.info('GO!');
+                        Player.lockMovement(false);
+                    } else{
+                        toastr.info(seconds+' seconds before the race starts.');
+                    }
+                    setTimeout(move, 1000, seconds-1);
+                }
+            })(seconds);
         });
 
-        socket.on('start', function() {
-            toastr.info('The race has started.');
-            console.log('[start]');
-            // TODO: notify the game has started
-            // TODO: disable moving if not started
-            // TODO: everyone needs a name first (don't hide modal)
-            // TODO: everyone needs to be ready
-            // TODO: 2+ players
+        socket.on('race-over', function(time) {
+            picoModal({
+                content: 'You lost',
+                closeButton: true,
+                overlayClose: false
+            }).show();
+            Player.lockMovement(true);
+            // TODO: show modal "waiting for others, your time is x"
         });
 
         socket.on('finished', function(time) {
@@ -148,6 +156,12 @@ const NotMarioKart = (function() {
                 const time = time;
             });
         });
+
+        socket.on('spectator', function(players) {
+            toaster.info('You are not a player, race full');
+        });
+
+
 
         window.setInterval(function() {
             const p = Player.playerObject;
@@ -299,6 +313,15 @@ const NotMarioKart = (function() {
         if (currentCheckpoint == 0 && lastCheckpoint == 4) {
             lastCheckpoint = currentCheckpoint;
             lap = lap + 1;
+            socket.emit('player-lap',lap);
+            if(lap == 2){
+                Player.lockMovement(true);
+                picoModal({
+                    content: 'You won!',
+                    closeButton: true,
+                    overlayClose: false
+                }).show();
+            }
         }
     }
 

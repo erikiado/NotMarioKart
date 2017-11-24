@@ -21,15 +21,17 @@ let gameStartedTimestamp = null;
 // fields: id, position, rotation
 let players = {};
 let boxes;
+let readys = [];
 
 io.on('connection', function(socket) {
     console.log('[connection]', socket.id);
-    const allPlayers = Object.values(players);
-    console.log(allPlayers)
-    socket.emit('all-players', allPlayers);
+    socket.emit('all-players', Object.values(players));
+    const playersLength = Object.values(players).length;
     const newPlayer = {
         id: socket.id,
-        playerNum: allPlayers.length,
+        playerNum: playersLength,
+        ready: false,
+        lap: 0,
         position: {
             x: 0, y: 0, z: 0
         },
@@ -37,47 +39,63 @@ io.on('connection', function(socket) {
             x: 0, y: 0, z: 0
         }
     };
-    players[socket.id] = newPlayer;
-    socket.broadcast.emit('player-joined', newPlayer);
-    if(allPlayers.length != 0){
+    if(playersLength != 0){
         socket.emit('receive-boxes', boxes);
     }
+    if(readys.length > 2){
+        socket.emit('spectator');
+    } else {
+        players[socket.id] = newPlayer;
+        socket.broadcast.emit('player-joined', newPlayer);
 
-    socket.on('disconnect', function() {
-        console.log('[disconnect]', socket.id);
-        delete players[socket.id];
-        io.emit('player-left', socket.id);
-    });
+        socket.on('disconnect', function() {
+            console.log('[disconnect]', socket.id);
+            delete players[socket.id];
+            delete readys[socket.id];
 
-    socket.on('update-player', function(player) {
-        // console.log('[update-player]', socket.id);
-        const id = socket.id;
-        const position = player.position;
-        const rotation = player.rotation;
-        socket.broadcast.emit('update-player', {
-            id: id,
-            position: position,
-            rotation: rotation
+            io.emit('player-left', socket.id);
         });
-        // TODO: Check if checkpoint is reached
-        // TODO: If checkpoint already reached, check if finish is reached
-        // TODO: If finished, io.emit('', ...)
-    });
 
-    socket.on('player-ready', function() {
-        console.log('[player-ready]', socket.id)
-        // TODO: marks this socket player as ready, if he has a name
-    });
+        socket.on('update-player', function(player) {
+            // console.log('[update-player]', socket.id);
+            const id = socket.id;
+            const position = player.position;
+            const rotation = player.rotation;
+            socket.broadcast.emit('update-player', {
+                id: id,
+                position: position,
+                rotation: rotation
+            });
+            // TODO: Check if checkpoint is reached
+            // TODO: If checkpoint already reached, check if finish is reached
+            // TODO: If finished, io.emit('', ...)
+        });
 
-    socket.on('player-name', function(name) {
-        // TODO: add name to current socket player
-        console.log('[player-name]', name);
-        players[socket.id]['name'] = name;
-    });
+        socket.on('player-ready', function(name) {
+            console.log('[player-ready]', name)
+            players[socket.id]['name'] = name;
+            players[socket.id].ready = true;
+            readys.push(socket.id)
+            if(readys.length == 2){
+                io.emit('start-race');
+            }
+            // TODO: marks this socket player as ready, if he has a name
+        });
 
-    socket.on('send-boxes', function(boxs){
-        boxes = boxs;
-    })
+        socket.on('player-lap', function(lap) {
+            players[socket.id].lap = lap;
+            if(lap == 2){
+                socket.broadcast.emit('race-over')
+                readys = [];
+            }
+            // TODO: marks this socket player as ready, if he has a name
+        });
+
+        socket.on('send-boxes', function(boxs){
+            boxes = boxs;
+        })
+    }
+
 });
 
 

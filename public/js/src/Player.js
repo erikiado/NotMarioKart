@@ -22,10 +22,10 @@ const Player = (function() {
         return currentCamera;
     };
 
-    let movementLocked = null;
 
     const playerObject = makePlayerObject();
     var playerId = null;
+    var movementLocked = true;
 
     const controls = {
         movement: {
@@ -64,6 +64,10 @@ const Player = (function() {
     document.addEventListener('keyup', onKeyMove, false);
 
     function doMovementLoop() {
+        if(movementLocked){
+            speed = 0
+            return;
+        } 
         if (keyCodeMap[enabledControls.up]) {
             if (speed < maxSpeed) {
                 speed += acceleration;
@@ -97,12 +101,13 @@ const Player = (function() {
             playerObject.position.set(0, playerObject.position.y, 0);
             playerObject.rotation.z = 0;
             playerObject.position.set(0, playerObject.position.z, 0);
+            speed = 0;
         }
     }
 
     function crash() {
-        // acceleration = 0;
         speed = 0;
+        // acceleration = 0;
         // if (keyCodeMap[enabledControls.up]) {
         //     playerObject.translateZ(-speed);
         // } else {
@@ -151,8 +156,8 @@ const Player = (function() {
         return object;
     }
 
-    function toggleMovements(isLocked) {
-        movementsLocked = isLocked;
+    function toggleMovements(val) {
+        movementLocked = val;
     }
 
     return {
@@ -161,6 +166,6 @@ const Player = (function() {
         getCamera: getCamera,
         playerId: playerId,
         crash: crash,
-        toggleMovements: toggleMovements
+        lockMovement: toggleMovements
     };
 })();
