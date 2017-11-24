@@ -22,6 +22,8 @@ const Player = (function() {
         return currentCamera;
     };
 
+    let movementLocked = null;
+
     const playerObject = makePlayerObject();
     var playerId = null;
 
@@ -149,11 +151,16 @@ const Player = (function() {
         return object;
     }
 
+    function toggleMovements(isLocked) {
+        movementsLocked = isLocked;
+    }
+
     return {
         doMovementLoop: doMovementLoop,
         playerObject: playerObject,
         getCamera: getCamera,
         playerId: playerId,
-        crash: crash
+        crash: crash,
+        toggleMovements: toggleMovements
     };
 })();

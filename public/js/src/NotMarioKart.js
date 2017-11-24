@@ -7,10 +7,10 @@ const NotMarioKart = (function() {
     const renderer = new THREE.WebGLRenderer();
     const miniMapRenderer = new THREE.WebGLRenderer();
     const miniMapCamera = new THREE.OrthographicCamera(
-        -WINDOW_WIDTH/MINICAM_FACTOR,
-        WINDOW_WIDTH/MINICAM_FACTOR,
-        WINDOW_HEIGHT/MINICAM_FACTOR,
-        -WINDOW_HEIGHT/MINICAM_FACTOR,
+        -WINDOW_WIDTH / MINICAM_FACTOR,
+        WINDOW_WIDTH / MINICAM_FACTOR,
+        WINDOW_HEIGHT / MINICAM_FACTOR,
+        -WINDOW_HEIGHT / MINICAM_FACTOR,
         TOP_CAMERA_DIST - 50,
         TOP_CAMERA_DIST + 50
     );
@@ -25,11 +25,31 @@ const NotMarioKart = (function() {
     var checkLapCount = 0;
     var currentCheckpoint;
     var lastCheckpoint = 0;
+    var otherPlayersModal;
 
     function initSocketEvent() {
         var socket = io({ transports: ['websocket'], upgrade: false });
 
-        // TODO: show modal with name form, then emit name
+        var modal = picoModal({
+            content:
+                'Please enter a name: <input id="playerName"/><br/><button id="playerNameBtn">Start!</button>',
+            closeButton: false,
+            overlayClose: false
+        }).show();
+
+        $('#playerNameBtn').on('click', function() {
+            socket.emit('player-name', $('#playerName').val());
+            modal.close();
+
+            console.log(players.length);
+            if (Object.values(players).length === 0) {
+                var waitingModal = picoModal({
+                    content: 'Waiting for other players...',
+                    closeButton: false,
+                    overlayClose: false
+                }).show();
+            }
+        });
 
         socket.on('all-players', function(data) {
             console.log('[all-players]', data);
@@ -47,9 +67,9 @@ const NotMarioKart = (function() {
                 scene.add(car);
             });
             console.log(data);
-            if(data.length == 0){
+            if (data.length == 0) {
                 addBoxes();
-                socket.emit('send-boxes',boxes);
+                socket.emit('send-boxes', boxes);
             }
         });
 
@@ -187,7 +207,7 @@ const NotMarioKart = (function() {
             materials.push(
                 new THREE.MeshBasicMaterial({
                     color: ROAD_COLORS[i],
-                    side: THREE.DoubleSide,
+                    side: THREE.DoubleSide
                     //wireframe: true // This makes track more Tron-like
                 })
             );
@@ -216,34 +236,38 @@ const NotMarioKart = (function() {
             new THREE.Vector3(300, 0, 580),
             new THREE.Vector3(250, 0, -200),
             new THREE.Vector3(200, 0, -870),
-            new THREE.Vector3(0, 0, -500),
+            new THREE.Vector3(0, 0, -500)
         ];
 
         for (let i = 0; i < curvePoints.length; i++) {
             // console.log(curvePoints[i]);
-            let check = new Checkpoint(curvePoints[i].x,
-                              BOX_SIZE/2,
-                              curvePoints[i].z);
+            let check = new Checkpoint(
+                curvePoints[i].x,
+                BOX_SIZE / 2,
+                curvePoints[i].z
+            );
             scene.updateMatrixWorld();
             // if (i != curvePoints.length-1) {
-                checkpoints.push(check);
-                scene.add(check.mesh);
+            checkpoints.push(check);
+            scene.add(check.mesh);
             // }
         }
     }
 
     function addBoxes() {
         let min = -2000;
-        let max =  2000;
+        let max = 2000;
         for (let i = 0; i < 1000; i++) {
             // Create random box.
-            let box = new Box(Math.floor(Math.random() * ((max-min)+1) + min),
-                              BOX_SIZE/2,
-                              Math.floor(Math.random() * ((max-min)+1) + min));
+            let box = new Box(
+                Math.floor(Math.random() * (max - min + 1) + min),
+                BOX_SIZE / 2,
+                Math.floor(Math.random() * (max - min + 1) + min)
+            );
             // Add only if it's over the floor.
             scene.updateMatrixWorld();
             Physics.gravity(box.mesh, floor);
-            if (box.mesh.position.y == BOX_SIZE/2) {
+            if (box.mesh.position.y == BOX_SIZE / 2) {
                 objects.push(box);
                 boxes.push({
                     x: box.mesh.position.x,
@@ -254,28 +278,25 @@ const NotMarioKart = (function() {
         }
     }
 
-
     function addBoxesPosition() {
         for (let i = 0; i < boxes.length; i++) {
             // Create random box.
-            let box = new Box(boxes[i].x,
-                              BOX_SIZE/2,
-                              boxes[i].z);
+            let box = new Box(boxes[i].x, BOX_SIZE / 2, boxes[i].z);
             // Add only if it's over the floor.
             scene.updateMatrixWorld();
             Physics.gravity(box.mesh, floor);
-            if (box.mesh.position.y == BOX_SIZE/2) {
+            if (box.mesh.position.y == BOX_SIZE / 2) {
                 objects.push(box);
                 scene.add(box.mesh);
             }
         }
     }
 
-    function checkLap(){
-        if(currentCheckpoint == lastCheckpoint+1){
+    function checkLap() {
+        if (currentCheckpoint == lastCheckpoint + 1) {
             lastCheckpoint = currentCheckpoint;
         }
-        if(currentCheckpoint == 0 && lastCheckpoint == 4){
+        if (currentCheckpoint == 0 && lastCheckpoint == 4) {
             lastCheckpoint = currentCheckpoint;
             lap = lap + 1;
         }
@@ -333,11 +354,14 @@ const NotMarioKart = (function() {
         if (Physics.detectCollision(Player.playerObject, objects)) {
             Player.crash();
         }
-        currentCheckpoint = Physics.checkPoints(Player.playerObject,checkpoints);
-        if(currentCheckpoint != -1){
-            if(checkLapCount % 10 == 0){
+        currentCheckpoint = Physics.checkPoints(
+            Player.playerObject,
+            checkpoints
+        );
+        if (currentCheckpoint != -1) {
+            if (checkLapCount % 10 == 0) {
                 checkLap();
-            } 
+            }
             checkLapCount += 1;
             checkLapCount = checkLapCount % 10;
         }
