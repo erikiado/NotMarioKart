@@ -20,13 +20,16 @@ let gameStartedTimestamp = null;
 // key is socket.id
 // fields: id, position, rotation
 let players = {};
+let boxes;
 
 io.on('connection', function(socket) {
     console.log('[connection]', socket.id);
     const allPlayers = Object.values(players);
+    console.log(allPlayers)
     socket.emit('all-players', allPlayers);
     const newPlayer = {
         id: socket.id,
+        playerNum: allPlayers.length,
         position: {
             x: 0, y: 0, z: 0
         },
@@ -36,6 +39,9 @@ io.on('connection', function(socket) {
     };
     players[socket.id] = newPlayer;
     socket.broadcast.emit('player-joined', newPlayer);
+    if(allPlayers.length != 0){
+        socket.emit('receive-boxes', boxes);
+    }
 
     socket.on('disconnect', function() {
         console.log('[disconnect]', socket.id);
@@ -44,7 +50,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('update-player', function(player) {
-        console.log('[update-player]', socket.id);
+        // console.log('[update-player]', socket.id);
         const id = socket.id;
         const position = player.position;
         const rotation = player.rotation;
@@ -68,7 +74,12 @@ io.on('connection', function(socket) {
         console.log('[player-name]', name);
         players[socket.id]['name'] = name;
     });
+
+    socket.on('send-boxes', function(boxs){
+        boxes = boxs;
+    })
 });
+
 
 http.listen(PORT, () => {
     console.log('Listening on port ' + PORT);
