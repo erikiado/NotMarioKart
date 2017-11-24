@@ -95,6 +95,7 @@ const Player = (function() {
             playerObject.position.set(0, playerObject.position.y, 0);
             playerObject.rotation.z = 0;
             playerObject.position.set(0, playerObject.position.z, 0);
+            speed = 0;
         }
     }
 

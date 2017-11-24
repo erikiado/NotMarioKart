@@ -25,9 +25,10 @@ const NotMarioKart = (function() {
     var checkLapCount = 0;
     var currentCheckpoint;
     var lastCheckpoint = 0;
+    var socket;
 
     function initSocketEvent() {
-        var socket = io({ transports: ['websocket'], upgrade: false });
+        socket = io({ transports: ['websocket'], upgrade: false });
 
         // TODO: show modal with name form, then emit name
 
@@ -46,7 +47,7 @@ const NotMarioKart = (function() {
                 car.rotation.set(rot.x, rot.y, rot.z);
                 scene.add(car);
             });
-            console.log(data);
+            // console.log(data);
             if(data.length == 0){
                 addBoxes();
                 socket.emit('send-boxes',boxes);
@@ -76,6 +77,10 @@ const NotMarioKart = (function() {
             // const car = players[playerId].//car;
             // scene.remove(car);
             // delete players[playerId];
+        });
+
+        socket.on('player-lap', function(){
+
         });
 
         socket.on('player-left', function(playerId) {
@@ -278,6 +283,7 @@ const NotMarioKart = (function() {
         if(currentCheckpoint == 0 && lastCheckpoint == 4){
             lastCheckpoint = currentCheckpoint;
             lap = lap + 1;
+            socket.emit('player-lap',lap);
         }
     }
 

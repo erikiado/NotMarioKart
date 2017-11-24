@@ -24,12 +24,11 @@ let boxes;
 
 io.on('connection', function(socket) {
     console.log('[connection]', socket.id);
-    const allPlayers = Object.values(players);
-    console.log(allPlayers)
-    socket.emit('all-players', allPlayers);
+    socket.emit('all-players', Object.values(players));
     const newPlayer = {
         id: socket.id,
-        playerNum: allPlayers.length,
+        playerNum: Object.values(players).length,
+        lap: 0,
         position: {
             x: 0, y: 0, z: 0
         },
@@ -38,10 +37,11 @@ io.on('connection', function(socket) {
         }
     };
     players[socket.id] = newPlayer;
-    socket.broadcast.emit('player-joined', newPlayer);
-    if(allPlayers.length != 0){
+    console.log(players);
+    if(players.length != 0){
         socket.emit('receive-boxes', boxes);
     }
+    socket.broadcast.emit('player-joined', newPlayer);
 
     socket.on('disconnect', function() {
         console.log('[disconnect]', socket.id);
@@ -73,6 +73,11 @@ io.on('connection', function(socket) {
         // TODO: add name to current socket player
         console.log('[player-name]', name);
         players[socket.id]['name'] = name;
+    });
+
+    socket.on('player-lap', function(lap) {
+        players[socket.id].lap = lap;
+        // TODO: marks this socket player as ready, if he has a name
     });
 
     socket.on('send-boxes', function(boxs){
