@@ -1,15 +1,16 @@
 {
   "name": "notmariokart",
   "version": "1.0.0",
+  "main": "index.js",
   "description": "Not Mario Kart game for Computer Graphics course.",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
-    "start": "npm-run-all -p build:w serve",
+    "start": "npm-run-all -p build:w server",
     "build": "gulp build",
     "build:w": "gulp build:watch",
-    "serve": "serve"
+    "server": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -24,14 +25,19 @@
     "@types/three": "^0.84.29",
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "browser-sync": "^2.18.13",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-plumber": "^1.1.0",
     "gulp-sourcemaps": "^2.6.1",
     "gulp-uglify": "^3.0.0",
-    "npm-run-all": "^4.1.1",
-    "serve": "^6.4.1"
+    "nodemon": "^1.12.1",
+    "npm-run-all": "^4.1.1"
+  },
+  "dependencies": {
+    "express": "^4.16.2",
+    "formidable": "^1.1.1",
+    "nodemon": "^1.12.1",
+    "socket.io": "^2.0.4"
   }
 }

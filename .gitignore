@@ -2,7 +2,7 @@
 .vscode/
 *.swp
 
-js/dist/
+public/js/dist/**
 
 node_modules/
 package-lock.json
