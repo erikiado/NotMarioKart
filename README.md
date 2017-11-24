@@ -8,6 +8,8 @@
 - Do `npm start` to:
     - Start the local server ([localhost:5000](http://localhost:5000)).
     - Build the javascript sources in watch mode.
+- Once the local server is running you can share your ip and anyone can connect to your server with the addres http://you.rip.add.ress:5000
+- You can find your ip address by running the ifconfig command if you are on linux or the ipconfig if you are on windows.
 
 ## Project structure
 - `assets` contains all images, sounds ...
