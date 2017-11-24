@@ -1,33 +1,33 @@
 <html>
-	<head>
-		<title>Not Mario Kart</title>
-		<style>
-			body { margin: 0; }
-			canvas { width: 100%; height: 100% }
-		</style>
-	</head>
-	<body>
-        <script src="/lib/three.min.js"></script>
-        <script src="/lib/playerCar.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
-		<script>
-		  /*var socket = io();
-		  socket.on('connect',()=>{
-		  	console.log(socket.id)
-		  	console.log(Player)
-		  	Player.playerId = socket.id;
-		  });
-		  socket.on('updatePlayers',(info) => {
-		  	if(info['id'] !== Player.playerId){
-		  		console.log(info);
-		  	}
-		  });*/
-		</script>
-        <script src="/js/dist/bundle.min.js"></script>
-        <script>
-            (function () {
-                NotMarioKart.init();
-            })();
-        </script>
-	</body>
+
+<head>
+    <title>Not Mario Kart</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+</head>
+
+<body>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="/lib/three.min.js"></script>
+    <script src="/lib/playerCar.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/dist/bundle.min.js"></script>
+    <script>
+        (function() {
+            toastr.options.positionClass = 'toast-top-left';
+            NotMarioKart.init();
+        })();
+    </script>
+</body>
+
 </html>

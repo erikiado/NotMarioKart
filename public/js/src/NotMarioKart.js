@@ -40,6 +40,7 @@ const NotMarioKart = (function() {
         });
 
         socket.on('player-joined', function(player) {
+            toastr.success(`player ${player.id} has joined.`);
             console.log('[player-joined]', player);
             const pos = player.position;
             const rot = player.rotation;
@@ -55,6 +56,7 @@ const NotMarioKart = (function() {
         });
 
         socket.on('player-left', function(playerId) {
+            toastr.error(`Player ${playerId} has left.`);
             console.log('[player-left]', playerId);
             const car = players[playerId].car;
             scene.remove(car);
@@ -72,11 +74,13 @@ const NotMarioKart = (function() {
         });
 
         socket.on('start-countdown', function(seconds) {
+            toastr.info(`${seconds} seconds before the race starts.`);
             console.log('[start-countdown]', seconds);
             // TODO: show "x seconds before start"
         });
 
         socket.on('start', function() {
+            toastr.info('The race has started.');
             console.log('[start]');
             // TODO: notify the game has started
             // TODO: disable moving if not started
@@ -86,11 +90,13 @@ const NotMarioKart = (function() {
         });
 
         socket.on('finished', function(time) {
+            toastr.info('You finished.');
             console.log('[finished]', time);
             // TODO: show modal "waiting for others, your time is x"
         });
 
         socket.on('stop', function(players) {
+            toaster.info('The race is over.');
             console.log('[stop]', stop);
             // TODO: all players are finished, show ranking and play again button
             players.forEach(function(player) {
@@ -114,7 +120,7 @@ const NotMarioKart = (function() {
                     z: p.rotation._z
                 }
             });
-        }, 1000 / 24);
+        }, 1000 / 80);
     }
 
     function makeCarObject() {
