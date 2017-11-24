@@ -89,9 +89,23 @@ const Player = (function() {
             keyCodeMap[controls.switchCamera] = false;
         }
         if (keyCodeMap[controls.reset]) {
+            playerObject.rotation.x = 0;
+            playerObject.position.set(0, playerObject.position.x, 0);
             playerObject.rotation.y = 0;
             playerObject.position.set(0, playerObject.position.y, 0);
+            playerObject.rotation.z = 0;
+            playerObject.position.set(0, playerObject.position.z, 0);
         }
+    }
+
+    function crash() {
+        // acceleration = 0;
+        speed = 0;
+        // if (keyCodeMap[enabledControls.up]) {
+        //     playerObject.translateZ(-speed);
+        // } else {
+        //     playerObject.translateZ(speed);
+        // }
 
         // for (var i = groupBlocks.length - 1; i >= 0; i--) {
         // let pos = groupBlocks[i].position;
@@ -119,6 +133,11 @@ const Player = (function() {
         const loader = new THREE.ObjectLoader();
         const object = loader.parse(playerCar);
 
+        povCamera.position.y = object.scale.y * 2;
+        povCamera.position.z = object.scale.z * 4;
+        // trackingCamera.rotateX(0 * Math.PI / 180);
+        povCamera.rotateY(180 * Math.PI / 180);
+
         trackingCamera.position.y = object.scale.y * 10;
         trackingCamera.position.z = object.scale.z * -20;
         // trackingCamera.rotateX(0 * Math.PI / 180);
@@ -134,6 +153,7 @@ const Player = (function() {
         doMovementLoop: doMovementLoop,
         playerObject: playerObject,
         getCamera: getCamera,
-        playerId: playerId
+        playerId: playerId,
+        crash: crash
     };
 })();
