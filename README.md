@@ -1,7 +1,7 @@
 # NotMarioKart
 
 ## Project setup
-- Install `NodeJS` on your system.
+- Install [NodeJS](https://nodejs.org/en/) on your system (requires version 8.*).
 - Do `npm install` in the root of the project.
 
 ## Run
