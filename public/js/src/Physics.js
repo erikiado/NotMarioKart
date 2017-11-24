@@ -32,8 +32,19 @@ const Physics = (function() {
         return false;
     }
 
+    function checkPoints(car, objects) {
+        let carBox = new THREE.Box3().setFromObject(car);
+        for (let i = 0; i < objects.length; i++) {
+            if (carBox.intersectsBox(objects[i].boundingBox)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     return {
         gravity: gravity,
-        detectCollision: detectCollision
+        detectCollision: detectCollision,
+        checkPoints: checkPoints
     };
 })();

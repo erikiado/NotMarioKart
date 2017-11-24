@@ -21,6 +21,10 @@ const NotMarioKart = (function() {
     const players = {};
     //Box positions for other players
     var boxes = [];
+    var lap = 0;
+    var checkLapCount = 0;
+    var currentCheckpoint;
+    var lastCheckpoint = 0;
 
     function initSocketEvent() {
         var socket = io({ transports: ['websocket'], upgrade: false });
@@ -267,6 +271,16 @@ const NotMarioKart = (function() {
         }
     }
 
+    function checkLap(){
+        if(currentCheckpoint == lastCheckpoint+1){
+            lastCheckpoint = currentCheckpoint;
+        }
+        if(currentCheckpoint == 0 && lastCheckpoint == 4){
+            lastCheckpoint = currentCheckpoint;
+            lap = lap + 1;
+        }
+    }
+
     function init() {
         renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         renderer.setPixelRatio(window.devicePixelRatio);
@@ -318,6 +332,14 @@ const NotMarioKart = (function() {
         Player.doMovementLoop();
         if (Physics.detectCollision(Player.playerObject, objects)) {
             Player.crash();
+        }
+        currentCheckpoint = Physics.checkPoints(Player.playerObject,checkpoints);
+        if(currentCheckpoint != -1){
+            if(checkLapCount % 10 == 0){
+                checkLap();
+            } 
+            checkLapCount += 1;
+            checkLapCount = checkLapCount % 10;
         }
         miniMapCamera.position.z = Player.playerObject.position.z;
 
