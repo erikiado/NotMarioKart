@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/erikiado/NotMarioKart#readme",
   "devDependencies": {
-    "@types/three": "^0.84.27",
+    "@types/three": "^0.84.29",
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "gulp": "^3.9.1",

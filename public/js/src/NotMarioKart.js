@@ -14,6 +14,8 @@ const NotMarioKart = (function() {
         TOP_CAMERA_DIST - 50,
         TOP_CAMERA_DIST + 50
     );
+    var floor;
+    var objects = [];
 
     const players = {};
 
@@ -158,7 +160,7 @@ const NotMarioKart = (function() {
             materials.push(
                 new THREE.MeshBasicMaterial({
                     color: ROAD_COLORS[i],
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
                     //wireframe: true // This makes track more Tron-like
                 })
             );
@@ -174,11 +176,30 @@ const NotMarioKart = (function() {
                 (i + Math.floor(i / WORLD_SIDE_SIZE)) % NUMBER_COLORS; // Other half of the same face
         }
 
-        let floor = new THREE.Mesh(geometry, materials);
+        floor = new THREE.Mesh(geometry, materials);
         floor.rotateX(-Math.PI / 2);
         floor.position.y = 0;
 
         scene.add(floor);
+    }
+
+    function addBoxes() {
+        let min = -2000;
+        let max =  2000;
+        for (let i = 0; i < 1000; i++) {
+            // Create random box.
+            let box = new Box(Math.floor(Math.random() * ((max-min)+1) + min),
+                              BOX_SIZE/2,
+                              Math.floor(Math.random() * ((max-min)+1) + min));
+
+            // Add only if it's over the floor.
+            scene.updateMatrixWorld();
+            Physics.gravity(box.mesh, floor);
+            if (box.mesh.position.y == BOX_SIZE/2) {
+                objects.push(box);
+                scene.add(box.mesh);
+            }
+        }
     }
 
     function init() {
@@ -202,6 +223,7 @@ const NotMarioKart = (function() {
         miniMapCamera.rotation.x = -90 * Math.PI / 180;
 
         buildFloor();
+        addBoxes();
 
         scene.add(Player.playerObject);
         initSocketEvent();
@@ -228,7 +250,12 @@ const NotMarioKart = (function() {
         // }
 
         Player.doMovementLoop();
+        if (Physics.detectCollision(Player.playerObject, objects)) {
+            Player.crash();
+        }
         miniMapCamera.position.z = Player.playerObject.position.z;
+
+        Physics.gravity(Player.playerObject, floor);
     }
 
     return {
